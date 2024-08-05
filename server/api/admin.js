@@ -6,7 +6,7 @@ const {
 } = require('../db/admin');
 
 
-adminRouter.get('/admin', async( req, res, next) => {
+adminRouter.get('/', async( req, res, next) => {
   try {
     const admin = await getAllAdmin();
 

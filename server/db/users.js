@@ -15,7 +15,7 @@ const createUser = async({ name, username, password }) => {
   } catch (err) {
     throw err;
   }
-}
+};
 
 const getUser = async(username, password) => {
   if(!username || !password) {
@@ -32,7 +32,7 @@ const getUser = async(username, password) => {
   } catch (err) {
     console.log(err);
   }
-}
+};
 
 const getUserByUsername = async(username) => {
   try {
@@ -52,7 +52,7 @@ const getUserByUsername = async(username) => {
   } catch (err) {
     throw err;
   }
-}
+};
 
 const getUserById = async(id) => {
   try {
@@ -69,22 +69,11 @@ const getUserById = async(id) => {
   } catch (err) {
     throw err;
   }
-}
+};
 
 async function getAllUsers() {
   try {
     const {rows} = await db.query(`
-      SELECT * FROM users;
-    `);
-    return rows;
-  } catch (error) {
-    throw error;
-  }
-}
-
-const getUserByInfo = async () => {
-  try {
-    const { rows } = await db.query(`
       SELECT * FROM users;
     `);
     return rows;
@@ -99,5 +88,4 @@ module.exports = {
   getUserByUsername,
   getUserById,
   getAllUsers,
-  getUserByInfo
-};
+}

@@ -2,11 +2,13 @@ require('dotenv').config();
 const db = require('./client');
 const { createUser } = require('./users');
 const { createAdmin } = require('./admin');
+const { createThread } = require('./threads');
 
 const dropTables = async () => {
   try {
     await db.query(`
       DROP TABLE IF EXISTS admin;
+      DROP TABLE IF EXISTS threads;
       DROP TABLE IF EXISTS users;
     `);
     console.log('Tables dropped successfully');
@@ -24,6 +26,18 @@ const createTables = async () => {
         name VARCHAR(255) UNIQUE NOT NULL,
         username VARCHAR(255) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL
+      );
+    `);
+
+    await db.query(`
+      CREATE TABLE threads(
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        content TEXT NOT NULL,
+        CONSTRAINT fk_user
+          FOREIGN KEY(user_id)
+          REFERENCES users(id)
       );
     `);
 
@@ -87,12 +101,39 @@ const createInitialAdmin = async () => {
   }
 };
 
+const createInitialThreads = async () => {
+  console.log("Starting to create initial threads...");
+
+  try {
+    const threadsToCreate = [
+      { 
+        user_id: 1,
+        title: "What soap is good for people with sensitive skin?", 
+        content: "I am struggling with eczema and looking for a soap that doesn't dry out my skin. I tried a lot brands that say they are sensitive skin friendly but haven't foudn a goo done yet. Please drop recommendations!"
+      },
+      {
+        user_id: 2,
+        title: "I am considering getting a master's degree in Business Admin. Pros and cons?",
+        content: "I am a recent graduate who just got their degree in Marketing. I am looking at grad programs in BUsiness Administration and was wondering if anyone here was currently in one. Would appreciate advice!"
+      }
+    ];
+    const threads = await Promise.all(threadsToCreate.map(createThread));
+    console.log('Threads created')
+    console.log(threads)
+    console.log('Finished creating threads')
+  } catch (error) {
+    console.error('Error creating threads: ', error);
+    throw error;
+  }
+};
+
 const seedDatabase = async () => {
   try {
     await dropTables();
     await createTables();
     await createInitialUsers();
     await createInitialAdmin();
+    await createInitialThreads();
   } catch (err) {
     console.error('Error seeding database:', err);
     throw err;
