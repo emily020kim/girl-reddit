@@ -51,6 +51,9 @@ apiRouter.use('/admin', adminRouter);
 const threadsRouter = require('./threads');
 apiRouter.use('/threads', threadsRouter);
 
+const repliesRouter = require('./replies');
+apiRouter.use('/replies', repliesRouter);
+
 apiRouter.use((err, req, res, next) => {
   res.status(500).send(err)
 })
