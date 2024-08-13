@@ -35,7 +35,6 @@ const createTables = async () => {
     await db.query(`
       CREATE TABLE users(
         id SERIAL PRIMARY KEY,
-        name VARCHAR(255) UNIQUE NOT NULL,
         username VARCHAR(255) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL
       );
@@ -104,8 +103,8 @@ const createInitialUsers = async () => {
 
   try {
     const usersToCreate = [
-      { name: 'Ariel Lopez', username: 'metaknight', password: process.env.DB_USER1 },
-      { name: 'Tyler Oakley', username: 'kirby', password: process.env.DB_USER2 },
+      { username: 'metaknight', password: process.env.DB_USER1 },
+      { username: 'kirby', password: process.env.DB_USER2 },
     ];
     const users = await Promise.all(usersToCreate.map(createUser));
 

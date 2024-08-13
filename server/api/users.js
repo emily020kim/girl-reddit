@@ -8,6 +8,7 @@ const {
   getAllUsers,
   getUserById,
   getUser,
+  createUser,
 } = require('../db/users');
 
 usersRouter.get('/', async( req, res, next) => {
@@ -36,7 +37,7 @@ usersRouter.get('/:id', async(req, res, next) => {
 });
 
 usersRouter.post('/login', async(req, res, next) => {
-  const { username, password } = req.body;
+  const {username, password} = req.body;
 
   if(!username || !password) {
     next({
@@ -58,6 +59,43 @@ usersRouter.post('/login', async(req, res, next) => {
     }
   } catch(err) {
     next(err);
+  }
+});
+
+usersRouter.post('/register', async (req, res, next) => {
+  const { username, password } = req.body;
+  
+  try {
+    const queriedUser = await getUser(username);
+    if (queriedUser) {
+      res.status(409);
+      next({
+        name: 'UserExistsError',
+        message: 'A user by that username already exists',
+      });
+    } 
+    else if (password.length < 8) {
+      res.status(400);
+      next({
+        name: 'PasswordLengthError',
+        message: 'Password Too Short!',
+      });
+    } 
+    else {
+      const user = await createUser({ username, password });
+      if (!user) {
+        res.status(500);
+        next({
+          name: 'UserCreationError',
+          message: 'There was a problem registering you. Please try again.',
+        });
+      } else {
+        const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1w' });
+        res.send({ user, message: "You're signed up!", token });
+      }
+    }
+  } catch (error) {
+    next(error);
   }
 });
 
