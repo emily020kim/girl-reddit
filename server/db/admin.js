@@ -65,31 +65,9 @@ const getAdminById = async(id) => {
   }
 }
 
-const getAdminByUsername = async(username) => {
-  try {
-    const { rows: [ admin ] } = await db.query(`
-      SELECT * 
-      FROM admin
-      WHERE username=$1;
-    `, [ username ]);
-
-    if(!admin) {
-      throw {
-        name: "AdminNotFoundError",
-        message: "An Admin with that username does not exist."
-      }
-    }
-
-    return admin;
-  } catch (err) {
-    throw err;
-  }
-}
-
 module.exports = {
   createAdmin,
   getAdmin,
-  getAdminByUsername,
   getAllAdmin,
   getAdminById,
 };

@@ -16,8 +16,7 @@ const createThread = async({ user_id, title, content }) => {
 const getThreadById = async(id) => {
   try {
     const { rows: [thread] } = await db.query(`
-      SELECT *
-      FROM threads
+      SELECT * FROM threads
       WHERE id=$1;
     `, [id]);
 
@@ -41,8 +40,22 @@ const getAllThreads = async () => {
   }
 };
 
+const deleteThread = async (id) => {
+  try {
+    const {rows: [thread]} = await db.query(`
+      DELETE FROM threads
+      WHERE id=$1
+      RETURNING *;
+    `, [id]);
+    return thread;
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
   createThread,
   getThreadById,
   getAllThreads,
+  deleteThread,
 }

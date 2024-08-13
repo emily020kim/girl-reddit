@@ -17,23 +17,6 @@ const createUser = async({ name, username, password }) => {
   }
 };
 
-const getUser = async(username, password) => {
-  if(!username || !password) {
-    return;
-  }
-  try {
-    const user = await getUserByUsername(username);
-    if(!user) return;
-    const hashedPassword = user.password;
-    const passwordsMatch = await bcrypt.compare(password, hashedPassword);
-    if(!passwordsMatch) return;
-    delete user.password;
-    return user;
-  } catch (err) {
-    console.log(err);
-  }
-};
-
 const getUserByUsername = async(username) => {
   try {
     const { rows: [ user ] } = await db.query(`
@@ -54,6 +37,23 @@ const getUserByUsername = async(username) => {
   }
 };
 
+const getUser = async(username, password) => {
+  if(!username || !password) {
+      return;
+  }
+  try {
+      const user = await getUserByUsername(username);
+      if(!user) return;
+      const hashedPassword = user.password;
+      const passwordsMatch = await bcrypt.compare(password, hashedPassword);
+      if(!passwordsMatch) return;
+      delete user.password;
+      return user;
+  } catch (err) {
+      console.log(err);
+  }
+};
+
 const getUserById = async(id) => {
   try {
     const { rows: [ user ] } = await db.query(`
@@ -71,7 +71,7 @@ const getUserById = async(id) => {
   }
 };
 
-async function getAllUsers() {
+const getAllUsers = async () => {
   try {
     const {rows} = await db.query(`
       SELECT * FROM users;
@@ -82,10 +82,24 @@ async function getAllUsers() {
   }
 };
 
+const deleteUser = async (id) => {
+  try {
+    const {rows: [user]} = await db.query(`
+      DELETE FROM users
+      WHERE id=$1
+      RETURNING *;
+    `, [id])
+    return user;
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
   createUser,
-  getUser,
   getUserByUsername,
   getUserById,
   getAllUsers,
+  getUser,
+  deleteUser,
 }

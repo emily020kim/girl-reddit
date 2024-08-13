@@ -24,7 +24,38 @@ const getAllReplies = async () => {
   }
 };
 
+const getReplyById = async (id) => {
+  try {
+    const { rows: [reply] } = await db.query(`
+      SELECT * FROM replies
+      WHERE id=$1;
+    `, [ id ]);
+
+    if (!reply) {
+      return;
+    }
+    return reply;
+  } catch (err) {
+    throw err;
+  };
+};
+
+const deleteReply = async (id) => {
+  try {
+    const {rows: [reply]} = await db.query(`
+      DELETE FROM replies
+      WHERE id=$1
+      RETURNING *;
+    `, [id]);
+    return reply;
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
   createReply,
   getAllReplies,
+  getReplyById,
+  deleteReply,
 }
