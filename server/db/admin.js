@@ -16,7 +16,7 @@ const createAdmin = async({ name, username, password, secret }) => {
   } catch (err) {
     throw err;
   }
-}
+};
 
 async function getAllAdmin() {
   try {
@@ -27,7 +27,7 @@ async function getAllAdmin() {
   } catch (error) {
     throw error;
   }
-}
+};
 
 const getAdmin = async({username, password, secret}) => {
   if(!username || !password || !secret) {
@@ -45,14 +45,12 @@ const getAdmin = async({username, password, secret}) => {
   } catch (error) {
     console.log("Getting admin error!", error);
   }
-}
+};
 
 const getAdminById = async(id) => {
   try {
     const { rows: [ admin ] } = await db.query(`
-      SELECT * 
-      FROM admin
-      WHERE id=$1;
+      SELECT * FROM admin WHERE id=$1
     `, [ id ]);
 
     if(!admin) {
@@ -63,11 +61,30 @@ const getAdminById = async(id) => {
     console.log(err);
     throw err;
   }
-}
+};
+
+const getAdminByUsername = async(username) => {
+  try {
+      const { rows: [ admin ] } = await db.query(`
+        SELECT * FROM admin WHERE username=$1
+      `, [ username ]);
+
+      if(!admin) {
+          throw {
+              name: "AdminNotFoundError",
+              message: "An Admin with that username does not exist."
+          }
+      };
+      return admin;
+  } catch (err) {
+      throw err;
+  }
+};
 
 module.exports = {
   createAdmin,
   getAdmin,
   getAllAdmin,
   getAdminById,
+  getAdminByUsername,
 };

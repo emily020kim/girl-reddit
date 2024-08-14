@@ -12,10 +12,8 @@ const {
   getAllReplies,
   getReplyById,
   getThreadById,
-  getUserById,
   deleteThread,
   deleteReply,
-  deleteUser,
 } = require('../db');
 
 adminRouter.post('/login', async(req, res, next) => {
@@ -99,8 +97,8 @@ adminRouter.get('/replies', async( req, res, next) => {
 
 adminRouter.delete('/threads/:threadId', async (req, res, next) => {
   try {
-    const {threadId} = req.params;
-    const threadToDelete = await getThreadById(threadId);
+    const threadId = await getThreadById(req.params.id);
+
     if(!threadToDelete) {
       next({
         name: 'NotFound',
@@ -118,8 +116,8 @@ adminRouter.delete('/threads/:threadId', async (req, res, next) => {
 
 adminRouter.delete('/replies/:repliesId', async (req, res, next) => {
   try {
-    const {replyId} = req.params;
-    const replyToDelete = await getReplyById(replyId);
+    const replyId = await getReplyById(req.params.id);
+
     if(!replyToDelete) {
       next({
         name: 'NotFound',
@@ -131,25 +129,6 @@ adminRouter.delete('/replies/:repliesId', async (req, res, next) => {
     }
   } catch (error) {
     console.log("Delete reply", error);
-    next(error);
-  }
-});
-
-adminRouter.delete('/users/:usersId', async (req, res, next) => {
-  try {
-    const {userId} = req.params;
-    const userToDelete = await getUserById(userId);
-    if(!userToDelete) {
-      next({
-        name: 'NotFound',
-        message: `No user by ID ${userId}`
-      })
-    } else {
-      const deletedUser = await deleteUser(userId)
-      res.send({success: true, ...deletedUser});
-    }
-  } catch (error) {
-    console.log("Delete user", error);
     next(error);
   }
 });
