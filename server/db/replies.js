@@ -1,12 +1,12 @@
 const db = require('./client');
 
-const createReply = async({ user_id, thread_id, content }) => {
+const createReply = async({ user_id, thread_id, content, date }) => {
   try {
     const { rows: [reply] } = await db.query(`
-      INSERT INTO replies(user_id, thread_id, content)
-      VALUES($1, $2, $3)
+      INSERT INTO replies(user_id, thread_id, content, date)
+      VALUES($1, $2, $3, $4)
       RETURNING *;  
-    `, [user_id, thread_id, content]);
+    `, [user_id, thread_id, content, date]);
     return reply;
   } catch (err) {
     throw err;
@@ -53,9 +53,43 @@ const deleteReply = async (id) => {
   }
 };
 
+const updateReply = async ({ id, ...fields }) => {
+  try {
+    const toUpdate = {};
+
+    for (let column in fields) {
+      if (fields[column] !== undefined) {
+        toUpdate[column] = fields[column];
+      }
+    }
+
+    if (Object.keys(toUpdate).length === 0) {
+      const currentReply = await getReplyById(id);
+      return currentReply;
+    }
+
+    const setString = Object.keys(toUpdate)
+      .map((col, index) => `"${col}" = $${index + 1}`)
+      .join(", ");
+
+    const { rows } = await db.query(`
+      UPDATE replies
+      SET ${setString}
+      WHERE id = $${Object.keys(toUpdate).length + 1}
+      RETURNING *;
+    `, [...Object.values(toUpdate), id]);
+
+    return rows[0];
+  } catch (error) {
+    console.log("Updating reply error", error);
+    throw error;
+  }
+};
+
 module.exports = {
   createReply,
   getAllReplies,
   getReplyById,
   deleteReply,
+  updateReply,
 }

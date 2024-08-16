@@ -46,6 +46,7 @@ const createTables = async () => {
         user_id INTEGER NOT NULL,
         title VARCHAR(255) NOT NULL,
         content TEXT NOT NULL,
+        date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         CONSTRAINT fk_user
           FOREIGN KEY(user_id)
           REFERENCES users(id)
@@ -58,6 +59,7 @@ const createTables = async () => {
         user_id INTEGER NOT NULL,
         thread_id INTEGER NOT NULL,
         content TEXT NOT NULL,
+        date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         CONSTRAINT fk_user
           FOREIGN KEY(user_id)
           REFERENCES users(id),
@@ -125,12 +127,14 @@ const createInitialThreads = async () => {
       { 
         user_id: 1,
         title: "What soap is good for people with sensitive skin?", 
-        content: "I am struggling with eczema and looking for a soap that doesn't dry out my skin. I tried a lot brands that say they are sensitive skin friendly but haven't found a good one yet. Please drop recommendations!"
+        content: "I am struggling with eczema and looking for a soap that doesn't dry out my skin. I tried a lot brands that say they are sensitive skin friendly but haven't found a good one yet. Please drop recommendations!",
+        date: new Date().toISOString().slice(0, 19).replace('T', ' ')
       },
       {
         user_id: 2,
         title: "I am considering getting a master's degree in Business Admin. Pros and cons?",
-        content: "I am a recent graduate who just got their degree in Marketing. I am looking at grad programs in Business Administration and was wondering if anyone here was currently in one. Would appreciate advice!"
+        content: "I am a recent graduate who just got their degree in Marketing. I am looking at grad programs in Business Administration and was wondering if anyone here was currently in one. Would appreciate advice!",
+        date: new Date().toISOString().slice(0, 19).replace('T', ' ')
       }
     ];
     const threads = await Promise.all(threadsToCreate.map(createThread));
@@ -151,12 +155,14 @@ const createInitialReplies = async () => {
       {
         user_id: 2,
         thread_id: 1,
-        content: "I tried using Aveeno and it helped but I noticed that if you put on a thin layer of Aquaphor it helps keep the moisture in!"
+        content: "I tried using Aveeno and it helped but I noticed that if you put on a thin layer of Aquaphor it helps keep the moisture in!",
+        date: new Date().toISOString().slice(0, 19).replace('T', ' ')
       },
       {
         user_id: 1,
         thread_id: 2,
-        content: "I am currently in UCSD business admin program for my master's and am enjoying it so far! Feel free to dm me and I can answer your questions!"
+        content: "I am currently in UCSD business admin program for my master's and am enjoying it so far! Feel free to dm me and I can answer your questions!",
+        date: new Date().toISOString().slice(0, 19).replace('T', ' ')
       }
     ]
     const replies = await Promise.all(repliesToCreate.map(createReply));

@@ -1,12 +1,12 @@
 const db = require('./client');
 
-const createThread = async({ user_id, title, content }) => {
+const createThread = async({ user_id, title, content, date }) => {
   try {
     const { rows: [thread] } = await db.query(`
-      INSERT INTO threads(user_id, title, content)
-      VALUES($1, $2, $3)
+      INSERT INTO threads(user_id, title, content, date)
+      VALUES($1, $2, $3, $4)
       RETURNING *
-    `, [user_id, title, content]);
+    `, [user_id, title, content, date]);
     return thread;
   } catch (err) {
     throw err;
