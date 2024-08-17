@@ -10,10 +10,6 @@ const {
   getAllUsers,
   getAllThreads,
   getAllReplies,
-  getReplyById,
-  getThreadById,
-  deleteThread,
-  deleteReply,
 } = require('../db');
 
 adminRouter.post('/login', async(req, res, next) => {
@@ -93,44 +89,6 @@ adminRouter.get('/replies', async( req, res, next) => {
     console.log("Error getting all replies!", error);
     next(error)
   }
-});
-
-adminRouter.delete('/threads/:threadId', async (req, res, next) => {
-  try {
-    const threadId = await getThreadById(req.params.id);
-
-    if(!threadToDelete) {
-      next({
-        name: 'NotFound',
-        message: `No thread by ID ${threadId}`
-      })
-    } else {
-      const deletedThread = await deleteThread(threadId)
-      res.send({success: true, ...deletedThread});
-    }
-  } catch (error) {
-    console.log("Delete thread", error);
-    next(error);
-  }
-});
-
-adminRouter.delete('/replies/:repliesId', async (req, res, next) => {
-  try {
-    const replyId = await getReplyById(req.params.id);
-
-    if(!replyToDelete) {
-      next({
-        name: 'NotFound',
-        message: `No reply by ID ${replyId}`
-      })
-    } else {
-      const deletedReply = await deleteReply(replyId)
-      res.send({success: true, ...deletedReply});
-    }
-  } catch (error) {
-    console.log("Delete reply", error);
-    next(error);
-  }
-});
+}); 
 
 module.exports = adminRouter;
