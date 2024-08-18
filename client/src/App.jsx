@@ -8,6 +8,7 @@ import Footer from './components/Footer';
 import Brand from './components/Brand';
 import Faq from './components/Faq';
 import Login from './components/Login';
+import Signup from './components/Signup';
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
         <Route path="/brand" element={<Brand />} />
         <Route path="/faq" element={<Faq />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/sign-up" element={<Signup />} />
       </Routes>
       <Footer />
     </Router>
