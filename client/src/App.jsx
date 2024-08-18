@@ -6,6 +6,7 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import Footer from './components/Footer';
 import Brand from './components/Brand';
+import Faq from './components/Faq';
 
 function App() {
 
@@ -15,6 +16,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/brand" element={<Brand />} />
+        <Route path="/faq" element={<Faq />} />
       </Routes>
       <Footer />
     </Router>

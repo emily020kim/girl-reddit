@@ -4,6 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body {
+  background-color: #222;
+}
+
 :root {
   font-family: "Inter", sans-serif;
   background-color: #222;
