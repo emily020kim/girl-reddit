@@ -10,7 +10,7 @@ const Navbar = () => {
   };
 
   const handleSignUp = () => {
-    navigate('/signup');
+    navigate('/login');
   };
 
   return (
