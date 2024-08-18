@@ -43,7 +43,7 @@ const Navbar = () => {
         onClick={handleSignUp}
         className="rounded-lg py-2 px-4 bg-cyan text-white font-medium text-base"
       >
-        Sign Up
+        Login
       </button>
     </div>
   );

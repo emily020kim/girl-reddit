@@ -8,6 +8,7 @@ export default {
     extend: {
       colors: {
         cyan: '#0ff0fc',
+        gray: '#444444',
       },
     },
   },
