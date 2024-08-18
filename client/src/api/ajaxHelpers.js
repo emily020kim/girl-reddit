@@ -33,7 +33,8 @@ export async function adminLogin(username, password, secret) {
 
 export async function registerUser(username, password) {
   const sendData = {
-    user: {username: username, password: password},
+    username: username,
+    password: password
   };
 
   try {
@@ -43,7 +44,7 @@ export async function registerUser(username, password) {
       body: JSON.stringify(sendData)
     });
     const result = await response.json();
-    const token = result.data.token;
+    const token = result.token;
     localStorage.setItem('user-token', token);
     localStorage.setItem('username', username);
     return result;
