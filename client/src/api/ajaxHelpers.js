@@ -97,9 +97,7 @@ export async function fetchAllUsers() {
 
 export async function fetchAllThreads() {
   try {
-    const response = await fetch(`${BASE_URL}/threads`, {
-      headers: getHeaders(),
-    });
+    const response = await fetch(`${BASE_URL}/threads`);
     const result = await response.json();
     return result;
   } catch (error) {
@@ -109,9 +107,7 @@ export async function fetchAllThreads() {
 
 export async function fetchAllReplies() {
   try {
-    const response = await fetch(`${BASE_URL}/replies`, {
-      headers: getHeaders(),
-    });
+    const response = await fetch(`${BASE_URL}/replies`);
     const result = await response.json();
     return result;
   } catch (error) {
