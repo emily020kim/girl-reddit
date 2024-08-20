@@ -6,12 +6,13 @@ import { FaPencil } from "react-icons/fa6";
 import { GiBowTieRibbon } from "react-icons/gi";
 
 const Dashboard = () => {
-  const [threads, setThreads] = useState({});
+  const [threads, setThreads] = useState([]);
 
   useEffect(() => {
     const fetchThreads = async () => {
       try {
         const response = await fetchAllThreads();
+        console.log("threads: ", response);
         setThreads(response.threads);
       } catch (error) {
         console.error("Failed to fetch all threads: ", error);
@@ -38,7 +39,9 @@ const Dashboard = () => {
                 <div className="bg-white p-1 rounded-full mr-2">
                   <GiBowTieRibbon size={15} className="text-pink-300"/>
                 </div>
-                <p className="text-white text-sm font-medium">username</p>
+                <p className="text-white text-sm font-medium">
+                  username
+                </p>
               </div>
               <h1 className="text-white text-base">{thread.title}</h1>
             </div>

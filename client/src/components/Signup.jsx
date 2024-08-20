@@ -28,7 +28,7 @@ const Signup = () => {
       if (response.error) {
         setPasswordErrorMessage("Registration failed. Please try again.");
       } else {
-        localStorage.setItem('token', response.token);
+        localStorage.setItem('user-token', response.token);
         setIsRegistered(true);
         navigate('/');
       }

@@ -45,7 +45,9 @@ export async function registerUser(username, password) {
     });
     const result = await response.json();
     const token = result.token;
+    const id = result.user.id;
     localStorage.setItem('user-token', token);
+    localStorage.setItem('id', id);
     localStorage.setItem('username', username);
     return result;
   } catch (error) {
@@ -74,7 +76,9 @@ export async function userLogin(username, password) {
     console.log("result: ", result);
 
     const token = result.token;
+    const id = result.user.id;
     localStorage.setItem('user-token', token);
+    localStorage.setItem('id', id);
     localStorage.setItem('username', username);
 
     return result;
@@ -118,9 +122,7 @@ export async function fetchAllReplies() {
 // Fetch by id
 export async function fetchSingleUser() {
   try {
-    const response = await fetch(`${BASE_URL}/users/:id`, {
-      headers: getHeaders(),
-    });
+    const response = await fetch(`${BASE_URL}/users/:id`);
     const result = await response.json();
     return result;
   } catch (error) {

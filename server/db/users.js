@@ -45,18 +45,19 @@ const getUserByUsername = async(username) => {
 
 const getUser = async(username, password) => {
   if(!username || !password) {
-      return;
+    return;
   }
+
   try {
-      const user = await getUserByUsername(username);
-      if(!user) return;
-      const hashedPassword = user.password;
-      const passwordsMatch = await bcrypt.compare(password, hashedPassword);
-      if(!passwordsMatch) return;
-      delete user.password;
-      return user;
+    const user = await getUserByUsername(username);
+    if(!user) return;
+    const hashedPassword = user.password;
+    const passwordsMatch = await bcrypt.compare(password, hashedPassword);
+    if(!passwordsMatch) return;
+    delete user.password;
+    return user;
   } catch (err) {
-      console.log(err);
+    console.log(err);
   }
 };
 

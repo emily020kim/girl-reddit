@@ -21,7 +21,7 @@ const Login = () => {
       if (response.error) {
         setPasswordErrorMessage("Username or password incorrect. Please try again.");
       } else {
-        localStorage.setItem('token', response.token);
+        localStorage.setItem('user-token', response.token);
         setIsLoggedIn(true);
         navigate('/');
       }
@@ -29,7 +29,7 @@ const Login = () => {
       console.error("Login failed:", error);
       setPasswordErrorMessage("An unexpected error occurred. Please try again later.");
     }
-  };  
+  };
 
   return (
     <div className='flex w-full justify-center items-center mt-48'>
