@@ -27,11 +27,19 @@ const Dashboard = () => {
   return (
     <div className="grid grid-cols-[2fr_1fr] gap-4 mt-12">
       <div className="flex flex-col bg-zinc-700 rounded-lg p-3">
-        <div className="flex items-center">
-          <div className="bg-zinc-500 p-2 rounded-full">
-            <FaPencil size={16} className="text-white"/>
+        <div className="flex justify-between">
+          <div className="flex items-center">
+            <div className="bg-zinc-500 p-2 rounded-full">
+              <FaPencil size={16} className="text-white"/>
+            </div>
+            <h1 className="text-xl text-white font-medium ml-2">Threads</h1>
           </div>
-          <h1 className="text-xl text-white font-medium ml-2">Threads</h1>
+          <button 
+            onClick={() => navigate('/create-thread')}
+            className="bg-cyan text-white text-base font-medium rounded-lg py-1 px-2"
+          >
+            Create new thread
+          </button>
         </div>
         <div className="h-[1px] bg-zinc-300 w-full my-3"></div>
         {threads?.length ? (

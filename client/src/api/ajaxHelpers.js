@@ -156,7 +156,7 @@ export async function fetchSingleReply(replyId) {
 // POST routes
 export async function createThread(user_id, title, content, date) {
   const sendData = {
-    thread: {user_id: user_id, title: title, content: content, date: date}
+    title, content
   };
 
   try {
@@ -165,11 +165,21 @@ export async function createThread(user_id, title, content, date) {
       method: 'POST',
       body: JSON.stringify(sendData)
     });
+
+    console.log("Response Status:", response.status);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Server Response Error:", errorData);
+      throw new Error('Failed to create thread');
+    }
+
     const result = await response.json();
     return result;
   } catch (error) {
     console.error('Trouble creating thread!', error);
-  };
+    throw error;
+  }
 };
 
 export async function createReply(content, threadId) {

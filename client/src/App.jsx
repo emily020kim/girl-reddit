@@ -11,6 +11,7 @@ import Login from './components/Login';
 import Signup from './components/Signup';
 import Dashboard from './components/Dashboard';
 import SingleThread from './components/SingleThread';
+import CreateThread from './components/CreateThread';
 
 function App() {
 
@@ -25,6 +26,7 @@ function App() {
         <Route path="/sign-up" element={<Signup />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/thread/:id" element={<SingleThread />} />
+        <Route path="/create-thread" element={<CreateThread />} />
       </Routes>
       <Footer />
     </Router>
