@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { fetchAllThreads } from "../api/ajaxHelpers";
 
@@ -7,6 +8,7 @@ import { GiBowTieRibbon } from "react-icons/gi";
 
 const Dashboard = () => {
   const [threads, setThreads] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchThreads = async () => {
@@ -43,15 +45,26 @@ const Dashboard = () => {
                   username
                 </p>
               </div>
-              <h1 className="text-white text-base">{thread.title}</h1>
+              <h1 className="text-white text-base mb-3">{thread.title}</h1>
+              <button
+                onClick={() => navigate(`/thread/${thread.id}`)}
+                className="bg-white rounded-lg py-1 px-2 text-sm font-medium border-[1px] border-cyan text-cyan"
+              >
+                See thread
+              </button>
             </div>
           ))
         ) : (
           <p className="text-white">No threads available.</p>
         )}
       </div>
-      <div className="flex bg-zinc-700 rounded-lg p-3">
-        <h1>hi</h1>
+      <div className="flex flex-col items-center bg-zinc-700 rounded-lg p-3">
+        <button 
+          onClick={{}}
+          className="w-2/3 bg-cyan text-white text-base font-medium py-1 px-2 rounded-md"
+        >
+          Start a thread
+        </button>
       </div>
     </div>
   );

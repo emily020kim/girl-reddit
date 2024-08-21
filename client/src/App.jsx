@@ -10,6 +10,7 @@ import Faq from './components/Faq';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Dashboard from './components/Dashboard';
+import SingleThread from './components/SingleThread';
 
 function App() {
 
@@ -23,10 +24,11 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/sign-up" element={<Signup />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/thread/:id" element={<SingleThread />} />
       </Routes>
       <Footer />
     </Router>
   );
 };
 
-export default App
+export default App;
