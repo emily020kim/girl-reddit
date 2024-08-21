@@ -73,7 +73,6 @@ export async function userLogin(username, password) {
     }
 
     const result = await response.json();
-    console.log("result: ", result);
 
     const token = result.token;
     const id = result.user.id;
@@ -157,7 +156,7 @@ export async function fetchSingleReply(replyId) {
 // POST routes
 export async function createThread(user_id, title, content, date) {
   const sendData = {
-    website: {user_id: user_id, title: title, content: content, date: date}
+    thread: {user_id: user_id, title: title, content: content, date: date}
   };
 
   try {
@@ -173,32 +172,39 @@ export async function createThread(user_id, title, content, date) {
   };
 };
 
-export async function createReply(content) {
+export async function createReply(content, threadId) {
   const sendData = {
-    website: {content: content}
+    content,
   };
 
   try {
-    const response = await fetch(`${BASE_URL}/replies`, {
+    const response = await fetch(`${BASE_URL}/replies/${threadId}`, {
       headers: getHeaders(),
       method: 'POST',
-      body: JSON.stringify(sendData)
+      body: JSON.stringify(sendData),
     });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
+      return;
+    }
+
     const result = await response.json();
     return result;
   } catch (error) {
     console.error('Trouble creating reply!', error);
-  };
+  }
 };
 
 // PATCH routes
 export async function editThread(id, user_id, title, content, date) {
   const sendData = {
-    website: {id: id, user_id: user_id, title: title, content: content, date: date},
+    thread: {id: id, user_id: user_id, title: title, content: content, date: date},
   };
 
   try {
-    const response = await fetch(`${BASE_URL}/threads/${threadId}`, {
+    const response = await fetch(`${BASE_URL}/threads/${id}`, {
       method: 'PATCH', 
       headers: getHeaders(),
       body: JSON.stringify(sendData),
@@ -212,11 +218,11 @@ export async function editThread(id, user_id, title, content, date) {
 
 export async function editReply(id, user_id, thread_id, content, date) {
   const sendData = {
-    website: {id: id, user_id: user_id, thread_id: thread_id, content: content, date: date},
+    reply: {id: id, user_id: user_id, thread_id: thread_id, content: content, date: date},
   };
 
   try {
-    const response = await fetch(`${BASE_URL}/replies/${replyId}`, {
+    const response = await fetch(`${BASE_URL}/replies/${id}`, {
       method: 'PATCH', 
       headers: getHeaders(),
       body: JSON.stringify(sendData),

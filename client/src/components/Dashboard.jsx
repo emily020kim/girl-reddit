@@ -5,6 +5,7 @@ import { fetchAllThreads } from "../api/ajaxHelpers";
 
 import { FaPencil } from "react-icons/fa6";
 import { GiBowTieRibbon } from "react-icons/gi";
+import { HiSparkles } from "react-icons/hi2";
 
 const Dashboard = () => {
   const [threads, setThreads] = useState([]);
@@ -14,7 +15,6 @@ const Dashboard = () => {
     const fetchThreads = async () => {
       try {
         const response = await fetchAllThreads();
-        console.log("threads: ", response);
         setThreads(response.threads);
       } catch (error) {
         console.error("Failed to fetch all threads: ", error);
@@ -58,13 +58,20 @@ const Dashboard = () => {
           <p className="text-white">No threads available.</p>
         )}
       </div>
-      <div className="flex flex-col items-center bg-zinc-700 rounded-lg p-3">
-        <button 
-          onClick={{}}
-          className="w-2/3 bg-cyan text-white text-base font-medium py-1 px-2 rounded-md"
-        >
-          Start a thread
-        </button>
+      <div className="flex flex-col self-start items-start bg-zinc-700 rounded-lg p-3">
+        <h1 className="text-cyan font-medium text-2xl text-center mb-4">
+          Grlhood Rules
+        </h1>
+        <h3 className="text-white text-base mb-2">
+          1. Be respectful
+        </h3>
+        <h3 className="text-white text-base mb-2">
+          2. Report problematic behavior
+        </h3>
+        <h3 className="flex items-center text-white text-base">
+          3. Stay classy <HiSparkles size={15} className="text-yellow-300 ml-1"/>
+          , stay demure <GiBowTieRibbon size={15} className="text-pink-300 ml-1"/>
+        </h3>
       </div>
     </div>
   );

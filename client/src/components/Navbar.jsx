@@ -17,12 +17,12 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('user-token');
     setIsAuthenticated(!!token);
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('user-token');
     setIsAuthenticated(false);
     navigate('/');
   };
