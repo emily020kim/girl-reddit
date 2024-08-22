@@ -103,9 +103,20 @@ const SingleThread = () => {
     }
   };  
 
-  const handleDelete = (replyId) => {
-    console.log(`Deleting reply with ID: ${replyId}`);
-    setPopupVisible(false);
+  const handleDelete = async (replyId) => {
+    try {
+      const response = await deleteReply(replyId);
+      if (response && response.success) {
+        const updatedReplies = replies.filter(reply => reply.id !== replyId);
+        setReplies(updatedReplies);
+        setSelectedReplyId(null);
+        setPopupVisible(false);
+      } else {
+        console.error("Failed to delete reply");
+      }
+    } catch (error) {
+      console.error("Error deleting reply:", error);
+    }
   };
 
   return (

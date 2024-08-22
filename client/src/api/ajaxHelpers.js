@@ -254,7 +254,7 @@ export async function editReply(id, user_id, thread_id, content, date) {
 // DELETE routes
 export async function deleteThread(threadId) {
   try {
-    const response = await fetch (`$BASE_URL}/reviews/${threadId}`, {
+    const response = await fetch (`${BASE_URL}/threads/${threadId}`, {
       method: 'DELETE',
       headers: getHeaders(),
     });
@@ -267,7 +267,7 @@ export async function deleteThread(threadId) {
 
 export async function deleteReply(replyId) {
   try {
-    const response = await fetch (`$BASE_URL}/reviews/${replyId}`, {
+    const response = await fetch (`${BASE_URL}/replies/${replyId}`, {
       method: 'DELETE',
       headers: getHeaders(),
     });
