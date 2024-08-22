@@ -210,7 +210,7 @@ export async function createReply(content, threadId) {
 // PATCH routes
 export async function editThread(id, user_id, title, content, date) {
   const sendData = {
-    thread: {id: id, user_id: user_id, title: title, content: content, date: date},
+    id: id, user_id: user_id, title: title, content: content, date: date
   };
 
   try {
@@ -228,20 +228,27 @@ export async function editThread(id, user_id, title, content, date) {
 
 export async function editReply(id, user_id, thread_id, content, date) {
   const sendData = {
-    reply: {id: id, user_id: user_id, thread_id: thread_id, content: content, date: date},
+    id: id, user_id: user_id, thread_id: thread_id, content: content, date: date
   };
 
   try {
     const response = await fetch(`${BASE_URL}/replies/${id}`, {
-      method: 'PATCH', 
+      method: 'PATCH',
       headers: getHeaders(),
       body: JSON.stringify(sendData),
     });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
+      return;
+    }
+    
     const result = await response.json();
     return result;
   } catch (error) {
-    console.error('Could not edit reply', error);
-  };
+    console.error('Could not edit reply:', error.message);
+  }  
 };
 
 // DELETE routes

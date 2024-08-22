@@ -63,7 +63,7 @@ repliesRouter.post('/:thread_id', requireUser, requiredNotSent({ requiredParams:
   }
 }); 
 
-repliesRouter.patch('/:id', requireUser, requiredNotSent({ requiredParams: ['content'], atLeastOne: true }), async (req, res, next) => {
+repliesRouter.patch('/:id', requiredNotSent({ requiredParams: ['content'] }), async (req, res, next) => {
   try {
     const { content, user_id, thread_id, date } = req.body;
     const { id } = req.params;
@@ -71,28 +71,34 @@ repliesRouter.patch('/:id', requireUser, requiredNotSent({ requiredParams: ['con
     const replyToUpdate = await getReplyById(id);
 
     if (!replyToUpdate) {
-      next({
+      return next({
         name: 'NotFound',
-        message: `No reply found with ID ${id}`
+        message: `No reply found with ID ${id}`,
       });
-    } else {
-      if (req.user.id !== replyToUpdate.user_id) {
-        next({
-          name: "WrongUserError",
-          message: "You must be the original creator of this reply to update it."
-        });
-      } else {
-        const updatedReply = await updateReply({ id, user_id, thread_id, content, date });
+    }
 
-        if (updatedReply) {
-          res.send(updatedReply);
-        } else {
-          next({
-            name: 'FailedToUpdate',
-            message: 'There was an error updating your reply'
-          });
-        }
-      }
+    if (req.user.id !== replyToUpdate.user_id) {
+      return next({
+        name: "WrongUserError",
+        message: "You must be the original creator of this reply to update it",
+      });
+    }
+
+    const updatedReply = await updateReply({ 
+      id, 
+      user_id, 
+      thread_id, 
+      content, 
+      date 
+    });
+
+    if (updatedReply) {
+      res.send(updatedReply);
+    } else {
+      next({
+        name: 'FailedToUpdate',
+        message: 'There was an error updating your reply',
+      });
     }
   } catch (error) {
     console.log("Updating reply error", error);
