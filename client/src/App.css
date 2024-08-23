@@ -3,9 +3,10 @@
 @tailwind utilities;
 
 #root {
-  max-width: 1280px;
+  max-width: 100vw;
+  max-height: 100vh;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
-  background-color: #222;
+  background-color: #F8F8FF;
 }

@@ -16,20 +16,24 @@ import CreateThread from './components/CreateThread';
 function App() {
 
   return (
-    <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/brand" element={<Brand />} />
-        <Route path="/faq" element={<Faq />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/sign-up" element={<Signup />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/thread/:id" element={<SingleThread />} />
-        <Route path="/create-thread" element={<CreateThread />} />
-      </Routes>
-      <Footer />
-    </Router>
+    <div className='flex justify-center'>
+      <div className='max-w-screen-xl h-screen'>
+        <Router>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/brand" element={<Brand />} />
+            <Route path="/faq" element={<Faq />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/sign-up" element={<Signup />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/thread/:id" element={<SingleThread />} />
+            <Route path="/create-thread" element={<CreateThread />} />
+          </Routes>
+          <Footer />
+        </Router>
+      </div>
+    </div>
   );
 };
 

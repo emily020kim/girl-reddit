@@ -12,8 +12,12 @@ const Navbar = () => {
     navigate('/');
   };
 
-  const handleSignUp = () => {
+  const handleLogin = () => {
     navigate('/login');
+  };
+
+  const handleSignup = () => {
+    navigate('/sign-up');
   };
 
   useEffect(() => {
@@ -42,8 +46,8 @@ const Navbar = () => {
   return (
     <div className="flex w-full justify-between items-center mb-4">
       <div className='flex justify-center items-center'>
-        <LiaKissWinkHeart size={35} className="text-cyan" onClick={handleClick}/>
-        <h1 className='text-cyan font-medium text-base ml-2'>grlhood</h1>
+        <LiaKissWinkHeart size={35} onClick={handleClick}/>
+        <h1 className='font-medium text-base ml-2'>grlhood</h1>
       </div>
       {isAuthenticated ? (
         <div className='flex justify-center items-center'>
@@ -57,7 +61,7 @@ const Navbar = () => {
             />
             <button
               type="submit"
-              className="ml-2 p-2 bg-cyan text-white rounded-lg"
+              className="ml-2 p-2 bg-green rounded-lg"
             >
               Search
             </button>
@@ -67,19 +71,19 @@ const Navbar = () => {
         <div className="flex justify-center items-center">
           <a 
             href="/"
-            className="text-white font-medium text-lg mr-8 py-2 px-4 hover:bg-cyan hover:py-2 hover:px-4 hover:rounded-xl"
+            className="font-medium text-lg mr-8 py-2 px-4 hover:bg-green hover:py-2 hover:px-4 hover:rounded-xl"
           >
             Home
           </a>
           <a 
             href="/brand"
-            className="text-white font-medium text-lg mr-8 py-2 px-4 hover:bg-cyan hover:py-2 hover:px-4 hover:rounded-xl"
+            className="font-medium text-lg mr-8 py-2 px-4 hover:bg-green hover:py-2 hover:px-4 hover:rounded-xl"
           >
             Brand
           </a>
           <a 
             href="/faq"
-            className="text-white font-medium text-lg py-2 px-4 hover:bg-cyan hover:py-2 hover:px-4 hover:rounded-xl"
+            className="font-medium text-lg py-2 px-4 hover:bg-green hover:py-2 hover:px-4 hover:rounded-xl"
           >
             FAQs
           </a>
@@ -88,17 +92,25 @@ const Navbar = () => {
       {isAuthenticated ? (
         <button
           onClick={handleLogout}
-          className="rounded-lg py-2 px-4 bg-white text-cyan font-medium text-base"
+          className="rounded-lg py-2 px-4 font-semibold text-base bg-green"
         >
           Logout
         </button>
       ) : (
-        <button
-          onClick={handleSignUp}
-          className="rounded-lg py-2 px-4 bg-cyan text-white font-medium text-base"
-        >
-          Login
-        </button>
+        <div className='flex'>
+          <button
+            onClick={handleLogin}
+            className="rounded-lg py-2 px-4 font-semibold text-base hover:bg-green hover:text-white border-2 mr-3"
+          >
+            Login
+          </button>
+          <button
+            onClick={handleSignup}
+            className="rounded-lg py-2 px-4 font-semibold text-base bg-black text-white hover:bg-green"
+          >
+            Sign up
+          </button>
+        </div>
       )}
     </div>
   );
