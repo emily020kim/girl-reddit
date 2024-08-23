@@ -1,9 +1,12 @@
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import Typography from '@mui/material/Typography';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
+  Box
+} from '@chakra-ui/react';
 
-import { IoIosArrowDown } from "react-icons/io";
 import { FaQuestion } from "react-icons/fa";
 
 const Faq = () => {
@@ -21,53 +24,47 @@ const Faq = () => {
         </div>
       </div>
       <div className="flex flex-col w-1/2">
-        <Accordion sx={{ backgroundColor: '#444444', borderRadius: '8px', marginBottom: '10px' }}>
-          <AccordionSummary
-            sx={{ padding: '0 16px' }}
-            expandIcon={<IoIosArrowDown className='text-white'/>}
-            aria-controls="panel1-content"
-            id="panel1-header"
-          >
-            <Typography sx={{ color: '#ffffff' }}>How do I join grlhood?</Typography>
-          </AccordionSummary>
-          <AccordionDetails sx={{ padding: '16px', borderTop: '1px solid #ddd' }}>
-            <Typography sx={{ color: '#ffffff' }}>
-              Good question! For now you can sign up for our platform on web by clicking on the sign up button.
-            </Typography>
-          </AccordionDetails>
-        </Accordion>
-        <Accordion sx={{ backgroundColor: '#444444', borderRadius: '8px', marginBottom: '10px' }}>
-          <AccordionSummary
-            sx={{ padding: '0 16px' }}
-            expandIcon={<IoIosArrowDown className='text-white'/>}
-            aria-controls="panel2-content"
-            id="panel2-header"
-          >
-            <Typography sx={{ color: '#ffffff' }}>What can I do on grlhood?</Typography>
-          </AccordionSummary>
-          <AccordionDetails sx={{ padding: '16px', borderTop: '1px solid #ddd' }}>
-            <Typography sx={{ color: '#ffffff' }}>
-              Grlhood is a social platform where users can start threads for questions they have to 
-              getting other girls opinions on topics. Currently, this is a beta release but later on we 
-              will release a community feature where you can chat with other users so stayed tuned!
-            </Typography>
-          </AccordionDetails>
-        </Accordion>
-        <Accordion sx={{ backgroundColor: '#444444', borderRadius: '8px', marginBottom: '10px' }}>
-          <AccordionSummary
-            sx={{ padding: '0 16px' }}
-            expandIcon={<IoIosArrowDown className='text-white'/>}
-            aria-controls="panel2-content"
-            id="panel2-header"
-          >
-            <Typography sx={{ color: '#ffffff' }}>If I am running into an issue or have a suggestion where do I reach out?</Typography>
-          </AccordionSummary>
-          <AccordionDetails sx={{ padding: '16px', borderTop: '1px solid #ddd' }}>
-            <Typography sx={{ color: '#ffffff' }}> 
-              If you are running into an issue on our platform or have an idea to make grlhood better,
-              feel free to send an email to support@grlhood.com.
-            </Typography>
-          </AccordionDetails>
+        <Accordion defaultIndex={[0]} allowMultiple>
+          <AccordionItem>
+            <h2>
+              <AccordionButton _expanded={{ bg: '#97c1a9', color: 'white' }}>
+                <Box as='span' flex='1' textAlign='left'>
+                  How do I join grlhood?
+                </Box>
+                <AccordionIcon />
+              </AccordionButton>
+            </h2>
+            <AccordionPanel>
+              Good question! Currently, you can sign up for grlhood by clicking on the Sign up button.
+            </AccordionPanel>
+          </AccordionItem>
+          <AccordionItem>
+            <h2>
+              <AccordionButton _expanded={{ bg: '#97c1a9', color: 'white' }}>
+                <Box as='span' flex='1' textAlign='left'>
+                  What can I do on grlhood?
+                </Box>
+                <AccordionIcon />
+              </AccordionButton>
+            </h2>
+            <AccordionPanel>
+              grlhood is a social platform where users can start threads to ask questions, get opinions, or even to just start a conversation.
+              Currently, grlhood is in it&apos;s beta release so stay tuned for more features coming soon.
+            </AccordionPanel>
+          </AccordionItem>
+          <AccordionItem>
+            <h2>
+              <AccordionButton _expanded={{ bg: '#97c1a9', color: 'white' }}>
+                <Box as='span' flex='1' textAlign='left'>
+                  If I encounter an issue or have a suggestion for making the platform better where do I reach out?
+                </Box>
+                <AccordionIcon />
+              </AccordionButton>
+            </h2>
+            <AccordionPanel>
+              If you are experiencing an issue or have suggestions to make the platform better, please email support@grlhood.com.
+            </AccordionPanel>
+          </AccordionItem>
         </Accordion>
       </div>
     </div>

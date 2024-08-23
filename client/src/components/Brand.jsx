@@ -10,10 +10,10 @@ const Brand = () => {
         </h1>
       </div>
       <div className='flex flex-col w-1/2 justify-start'>
-        <h1 className='text-cyan font-medium text-4xl mb-4'>
-          Grlhood's Mission
+        <h1 className='text-cyan font-medium text-5xl mb-4'>
+          grlhood's mission
         </h1>
-        <h4 className='flex items-center text-white text-lg'>
+        <h4 className='flex items-center text-lg'>
           Grlhood aspires to be a platform where any girl can be their authentic self.
           It always heartwarming to see girls help each other and cheer for one another.
           We will always be a girl at heart no matter our age. 
