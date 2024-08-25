@@ -61,7 +61,7 @@ const Navbar = () => {
             />
             <button
               type="submit"
-              className="ml-2 p-2 bg-green rounded-lg"
+              className="ml-2 p-2 bg-green text-white font-medium rounded-lg"
             >
               Search
             </button>
@@ -92,7 +92,7 @@ const Navbar = () => {
       {isAuthenticated ? (
         <button
           onClick={handleLogout}
-          className="rounded-lg py-2 px-4 font-semibold text-base bg-green"
+          className="rounded-lg py-2 px-4 font-semibold text-base bg-green text-white"
         >
           Logout
         </button>
