@@ -56,6 +56,11 @@ const SingleThread = () => {
     }
   };
 
+  const handleCancelReply = () => {
+    setReplyContent("");
+    setIsReplying(false);
+  };
+
   const togglePopup = (replyId) => {
     if (selectedReplyId === replyId && isPopupVisible) {
       setPopupVisible(false);
@@ -121,7 +126,7 @@ const SingleThread = () => {
 
   return (
     <div className="flex flex-col">
-      <div className="flex flex-col bg-zinc-700 w-full items-start rounded-lg p-3 mt-12 mb-3">
+      <div className="flex flex-col bg-green w-full items-start rounded-lg p-3 mt-12 mb-3 shadow-md">
         <div onClick={() => navigate('/dashboard')} className="flex items-center mb-6">
           <FaArrowLeft size={20} className="text-white mr-2" />
           <p className="text-white text-xs">Back to dashboard</p>
@@ -134,7 +139,7 @@ const SingleThread = () => {
           <p className="text-white text-sm font-medium">username</p>
         </div>
         <h1 className="text-white font-medium text-xl mb-3">{thread?.title}</h1>
-        <h6 className="text-white text-sm mb-4">{thread?.content}</h6>
+        <h6 className="text-white text-start text-sm mb-4">{thread?.content}</h6>
 
         <button onClick={handleReplyClick} className="bg-white rounded-lg py-1 px-2 text-sm font-medium border-[1px] border-cyan text-cyan">
           Reply
@@ -143,13 +148,16 @@ const SingleThread = () => {
         {isReplying && (
           <div className="mt-3 w-full">
             <textarea
-              className="w-full p-2 rounded-md bg-zinc-600 text-white"
+              className="w-full p-2 rounded-md bg-white"
               placeholder="Type your reply here..."
               value={replyContent}
               onChange={(e) => setReplyContent(e.target.value)}
             />
-            <button onClick={handleReplySubmit} className="bg-cyan rounded-lg py-1 px-2 text-sm font-medium mt-2 text-white">
+            <button onClick={handleReplySubmit} className="rounded-lg py-1 px-2 text-sm font-medium mt-2 text-green bg-white mr-3">
               Post Reply
+            </button>
+            <button onClick={handleCancelReply} className="rounded-lg py-1 px-2 text-sm font-medium mt-2 text-red-600 bg-white">
+              Cancel
             </button>
           </div>
         )}
@@ -157,7 +165,7 @@ const SingleThread = () => {
 
       {replies?.length ? (
         replies.map((reply) => (
-          <div key={reply.id} className="flex flex-col items-start w-full bg-zinc-600 rounded-md py-3 px-6 mb-3 relative">
+          <div key={reply.id} className="flex flex-col items-start w-full bg-green rounded-md py-3 px-6 mb-3 relative shadow-sm">
             <div className="flex w-full justify-between items-center">
               <div className="flex items-center mb-2">
                 <div className="bg-white p-1 rounded-full mr-2">
