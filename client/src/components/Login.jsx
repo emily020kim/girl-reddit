@@ -10,11 +10,10 @@ import { userLogin } from '../api/ajaxHelpers';
 
 import cat from '../assets/login-cat.jpg';
 
-const Login = () => {
+const Login = ({ setIsAuthenticated }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [show, setShow] = useState(false);
   const navigate = useNavigate();
 
@@ -29,14 +28,14 @@ const Login = () => {
         setPasswordErrorMessage("Username or password incorrect. Please try again.");
       } else {
         localStorage.setItem('user-token', response.token);
-        setIsLoggedIn(true);
+        setIsAuthenticated(true);
         navigate('/dashboard');
       }
     } catch (error) {
       console.error("Login failed:", error);
       setPasswordErrorMessage("An unexpected error occurred. Please try again later.");
     }
-  };  
+  };
 
   return (
     <div className='flex w-full justify-center items-center mt-48'>

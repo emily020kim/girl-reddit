@@ -1,29 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import ProfileModal from './ProfileModal';
 import { LiaKissWinkHeart } from "react-icons/lia";
+import { Avatar, useDisclosure } from '@chakra-ui/react';
 
-const Navbar = () => {
+const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const username = localStorage.getItem('username');
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleClick = () => {
     navigate('/');
   };
 
-  const handleLogin = () => {
+  const navigateLogin = () => {
     navigate('/login');
-  };
+  }
 
-  const handleSignup = () => {
+  const navigateSignup = () => {
     navigate('/sign-up');
-  };
+  }
 
   useEffect(() => {
     const token = localStorage.getItem('user-token');
     setIsAuthenticated(!!token);
-  }, []);
+  }, [setIsAuthenticated]);
 
   const handleLogout = () => {
     localStorage.removeItem('user-token');
@@ -37,9 +39,6 @@ const Navbar = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Search logic can be placed here
-    console.log("Search Term:", searchTerm);
-    // Example: Redirect to search results page
     navigate(`/search?query=${searchTerm}`);
   };
 
@@ -90,22 +89,31 @@ const Navbar = () => {
         </div>
       )}
       {isAuthenticated ? (
-        <button
-          onClick={handleLogout}
-          className="rounded-lg py-2 px-4 font-semibold text-base bg-green text-white"
-        >
-          Logout
-        </button>
+        <div className='flex items-center'>
+          <Avatar 
+            size='md' 
+            name={username}  
+            src='https://bit.ly/broken-link'
+            onClick={onOpen}
+          />
+          <ProfileModal isOpen={isOpen} onClose={onClose} />
+          <button
+            onClick={handleLogout}
+            className="rounded-lg py-2 px-4 font-semibold text-base bg-green text-white ml-3"
+          >
+            Logout
+          </button>
+        </div>
       ) : (
         <div className='flex'>
           <button
-            onClick={handleLogin}
+            onClick={navigateLogin}
             className="rounded-lg py-2 px-4 font-semibold text-base hover:bg-green hover:text-white border-2 mr-3"
           >
             Login
           </button>
           <button
-            onClick={handleSignup}
+            onClick={navigateSignup}
             className="rounded-lg py-2 px-4 font-semibold text-base bg-black text-white hover:bg-green"
           >
             Sign up
