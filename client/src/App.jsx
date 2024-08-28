@@ -4,14 +4,14 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 
 import Navbar from './components/Navbar';
-import Home from './components/Home';
+import Home from './pages/Home';
 import Footer from './components/Footer';
-import Brand from './components/Brand';
-import Faq from './components/Faq';
-import Login from './components/Login';
-import Signup from './components/Signup';
-import Dashboard from './components/Dashboard';
-import SingleThread from './components/SingleThread';
+import Brand from './pages/Brand';
+import Faq from './pages/Faq';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Dashboard from './pages/Dashboard';
+import SingleThread from './pages/SingleThread';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
