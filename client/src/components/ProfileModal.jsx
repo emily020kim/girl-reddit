@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchAllThreads } from "../api/ajaxHelpers";
+import { fetchAllThreads, deleteThread } from "../api/ajaxHelpers";
 import {
   Modal,
   ModalOverlay,
@@ -16,13 +16,19 @@ import {
   Stack,
   VStack,
   Text,
+  Card,
+  CardBody,
 } from '@chakra-ui/react';
+import { BsThreeDots } from "react-icons/bs";
+import { FaTrashAlt } from "react-icons/fa";
 
 const ProfileModal = ({ isOpen, onClose }) => {
   const [threads, setThreads] = useState([]);
   const [showThreads, setShowThreads] = useState(false);
+  const [popupState, setPopupState] = useState({ visible: false, threadId: null });
+
   const username = localStorage.getItem('username');
-  const userId = localStorage.getItem('id');
+  const userId = parseInt(localStorage.getItem('id'), 10);
 
   useEffect(() => {
     const fetchThreads = async () => {
@@ -40,6 +46,27 @@ const ProfileModal = ({ isOpen, onClose }) => {
   const handleToggleThreads = () => {
     setShowThreads(!showThreads);
   };
+
+  const togglePopup = (threadId) => {
+    setPopupState(prevState => ({
+      visible: !(prevState.visible && prevState.threadId === threadId),
+      threadId: prevState.threadId === threadId ? null : threadId
+    }));
+  };
+
+  const handleDelete = async (threadId) => {
+    try {
+      const response = await deleteThread(threadId);
+      if (response && response.success) {
+        setThreads(prevThreads => prevThreads.filter(thread => thread.id !== threadId));
+        setPopupState({ visible: false, threadId: null });
+      } else {
+        console.error("Failed to delete thread");
+      }
+    } catch (error) {
+      console.error("Error deleting thread:", error);
+    }
+  };  
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size='lg' isCentered>
@@ -71,9 +98,35 @@ const ProfileModal = ({ isOpen, onClose }) => {
 
           {showThreads && (
             <VStack align="start" spacing={2} mt={4}>
-              {threads?.length ? (
+              {threads.length ? (
                 threads.map(thread => (
-                  <Text key={thread.id}>{thread.title}</Text>
+                  <Card key={thread.id} mb={2} bgColor='#97c1a9' size='sm'>
+                    <CardBody>
+                      <div className="flex flex-col">
+                        <div className="flex justify-end">
+                        <BsThreeDots 
+                          size={20}
+                          className="text-white cursor-pointer"
+                          onClick={() => togglePopup(thread.id)}
+                        />
+                        </div>
+                        {popupState.visible && popupState.threadId === thread.id && (
+                          <div
+                            className="absolute right-0 bg-white text-black rounded shadow-lg z-10"
+                            style={{ top: '100%', transform: 'translateY(-50%)' }}
+                          >
+                            <button
+                              className="flex items-center px-4 py-2 text-sm hover:bg-gray-200"
+                              onClick={() => handleDelete(thread.id)}
+                            >
+                              <FaTrashAlt size={15} className="text-red-600 mr-1" /> Delete
+                            </button>
+                          </div>
+                        )}
+                        <Text fontSize='sm' color='white'>{thread.title}</Text>
+                      </div>
+                    </CardBody>
+                  </Card>
                 ))
               ) : (
                 <Text>No threads found.</Text>
