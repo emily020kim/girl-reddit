@@ -6,6 +6,7 @@ import {
   createReply,
   editReply,
   deleteReply, 
+  fetchAllUsers,
 } from "../api/ajaxHelpers";
 import { GiBowTieRibbon } from "react-icons/gi";
 import { FaArrowLeft, FaTrashAlt } from "react-icons/fa";
@@ -23,6 +24,7 @@ const SingleThread = () => {
   const [selectedReplyId, setSelectedReplyId] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editingReplyContent, setEditingReplyContent] = useState("");
+  const [username, setUsername] = useState("");
 
   useEffect(() => {
     const fetchThreadAndReplies = async () => {
@@ -124,6 +126,30 @@ const SingleThread = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchThreadAndUsername = async () => {
+      try {
+        const threadResponse = await fetchSingleThread(id);
+        setThread(threadResponse.thread);
+  
+        const threadUserId = threadResponse.thread.user_id;
+  
+        const response = await fetchAllUsers();
+        const user = response.users.find((user) => user.id === threadUserId);
+        if (user) {
+          const name = user.username;
+          setUsername(name);
+        } else {
+          console.error("User not found");
+        }
+      } catch (error) {
+        console.error("Failed to fetch thread or username:", error);
+      }
+    };
+  
+    fetchThreadAndUsername();
+  }, [id]);
+
   return (
     <div className="flex flex-col">
       <div className="flex flex-col bg-green w-full items-start rounded-lg p-3 mt-12 mb-3 shadow-md">
@@ -136,7 +162,7 @@ const SingleThread = () => {
           <div className="bg-white p-1 rounded-full mr-2">
             <GiBowTieRibbon size={15} className="text-pink-300" />
           </div>
-          <p className="text-white text-sm font-medium">username</p>
+          <p className="text-white text-sm font-medium">{username}</p>
         </div>
         <h1 className="text-white font-medium text-xl mb-3">{thread?.title}</h1>
         <h6 className="text-white text-start text-sm mb-4">{thread?.content}</h6>

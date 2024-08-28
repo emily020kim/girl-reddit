@@ -1,7 +1,11 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-import { fetchAllThreads, createThread } from "../api/ajaxHelpers";
+import { 
+  fetchAllThreads, 
+  createThread,
+  fetchAllUsers,
+} from "../api/ajaxHelpers";
 
 import {
   Modal,
@@ -24,9 +28,11 @@ import { GiBowTieRibbon } from "react-icons/gi";
 import { HiSparkles } from "react-icons/hi2";
 
 const Dashboard = () => {
+  const { id } = useParams();
   const [threads, setThreads] = useState([]);
   const [newThreadTitle, setNewThreadTitle] = useState("");
   const [newThreadContent, setNewThreadContent] = useState("");
+  const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -34,16 +40,30 @@ const Dashboard = () => {
   const finalRef = useRef(null)
 
   useEffect(() => {
-    const fetchThreads = async () => {
+    const fetchThreadsAndUsers = async () => {
       try {
+        // Fetch threads
         const response = await fetchAllThreads();
-        setThreads(response.threads);
+        const fetchedThreads = response.threads;
+
+        // Fetch all users
+        const userResponse = await fetchAllUsers();
+        const fetchedUsers = userResponse.users;
+        setUsers(fetchedUsers);
+
+        // Add username to each thread based on user_id
+        const threadsWithUsernames = fetchedThreads.map(thread => {
+          const user = fetchedUsers.find(user => user.id === thread.user_id);
+          return { ...thread, username: user ? user.username : "Unknown" };
+        });
+
+        setThreads(threadsWithUsernames);
       } catch (error) {
-        console.error("Failed to fetch all threads: ", error);
+        console.error("Failed to fetch threads or users: ", error);
       }
     };
 
-    fetchThreads();
+    fetchThreadsAndUsers();
   }, []);
 
   const handleCreateThread = async () => {
@@ -90,7 +110,7 @@ const Dashboard = () => {
                   <GiBowTieRibbon size={15} className="text-pink-300"/>
                 </div>
                 <p className="text-white text-sm font-medium">
-                  username
+                  {thread.username}
                 </p>
               </div>
               <h1 className="text-white text-base mb-3">{thread.title}</h1>
