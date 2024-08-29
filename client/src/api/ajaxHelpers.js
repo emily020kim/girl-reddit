@@ -277,3 +277,20 @@ export async function deleteReply(replyId) {
     console.error ('Could not delete reply', error);
   };
 };
+
+// SEARCH route
+export async function search(searchTerm) {
+  try {
+    const response = await fetch(`${BASE_URL}/threads/search?term=${encodeURIComponent(searchTerm)}`);
+    
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    const threads = await response.json();
+    return threads;
+  } catch (error) {
+    console.error("Error fetching search results:", error);
+    return [];
+  };
+};

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import ProfileModal from './ProfileModal';
 import { LiaKissWinkHeart } from "react-icons/lia";
 import { Avatar, useDisclosure } from '@chakra-ui/react';
+import { search } from '../api/ajaxHelpers';
 
 const NavbarButton = ({ children, onClick, className = '' }) => (
   <button
@@ -16,6 +17,8 @@ const NavbarButton = ({ children, onClick, className = '' }) => (
 const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
   const username = localStorage.getItem('username');
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -24,7 +27,26 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
     setIsAuthenticated(!!token);
   }, [setIsAuthenticated]);
 
+  useEffect(() => {
+    if (searchTerm) {
+      const fetchSearchResults = async () => {
+        try {
+          const results = await search(searchTerm);
+          console.log("search results: ", results);
+          setSearchResults(results);
+          setShowDropdown(true);
+        } catch (error) {
+          console.error("Error fetching search results:", error);
+        }
+      };
+      fetchSearchResults();
+    } else {
+      setShowDropdown(false);
+    }
+  }, [searchTerm]);  
+
   const handleNavigation = (path) => () => navigate(path);
+
   const handleLogout = () => {
     localStorage.removeItem('user-token');
     setIsAuthenticated(false);
@@ -32,9 +54,11 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
   };
 
   const handleInputChange = (e) => setSearchTerm(e.target.value);
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    navigate(`/search?query=${searchTerm}`);
+
+  const handleResultClick = (result) => {
+    navigate(`/thread/${result.id}`);
+    setShowDropdown(false);
+    setSearchTerm('');
   };
 
   return (
@@ -45,7 +69,7 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
       </div>
       
       {isAuthenticated ? (
-        <form onSubmit={handleSubmit} className="flex items-center">
+        <div className="relative">
           <input
             type="text"
             value={searchTerm}
@@ -53,10 +77,20 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
             placeholder="Search..."
             className="p-2 border border-gray-300 rounded-lg"
           />
-          <NavbarButton className="ml-2 bg-green text-white">
-            Search
-          </NavbarButton>
-        </form>
+          {showDropdown && (
+            <ul className="absolute bg-white border border-gray-300 rounded-lg mt-1 w-full max-h-60 overflow-y-auto shadow-lg z-10">
+              {searchResults.map(result => (
+                <li 
+                  key={result.id} 
+                  className="p-2 cursor-pointer hover:bg-gray-200"
+                  onClick={() => handleResultClick(result)}
+                >
+                  {result.title}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       ) : (
         <div className="flex justify-center items-center">
           {['Home', 'Brand', 'FAQs'].map((text, index) => (

@@ -42,16 +42,13 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchThreadsAndUsers = async () => {
       try {
-        // Fetch threads
         const response = await fetchAllThreads();
         const fetchedThreads = response.threads;
 
-        // Fetch all users
         const userResponse = await fetchAllUsers();
         const fetchedUsers = userResponse.users;
         setUsers(fetchedUsers);
 
-        // Add username to each thread based on user_id
         const threadsWithUsernames = fetchedThreads.map(thread => {
           const user = fetchedUsers.find(user => user.id === thread.user_id);
           return { ...thread, username: user ? user.username : "Unknown" };
