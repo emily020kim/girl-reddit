@@ -123,32 +123,4 @@ threadsRouter.delete('/:id', requireUser, async (req, res, next) => {
   }
 });
 
-threadsRouter.get('/search', (req, res) => {
-  const searchTerm = req.query.term;
-  if (!searchTerm) {
-    return res.status(400).json({
-      error: 'Search term is required'
-    });
-  }
-  
-  const query = `
-    SELECT * FROM threads
-    WHERE title LIKE ?
-  `;
-  
-  const searchValue = `%${searchTerm}%`;
-  
-  db.query(query, [searchValue], (err, results) => {
-    if (err) {
-      console.error('Error executing search query:', err);
-      return res.status(500).json({
-        error: 'Internal server error'
-      });
-    }
-      
-    res.json(results);
-  });
-});
-
-
 module.exports = threadsRouter;

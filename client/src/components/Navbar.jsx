@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import ProfileModal from './ProfileModal';
 import { LiaKissWinkHeart } from "react-icons/lia";
 import { Avatar, useDisclosure } from '@chakra-ui/react';
-import { search } from '../api/ajaxHelpers';
+import { fetchAllThreads } from '../api/ajaxHelpers';
 
 const NavbarButton = ({ children, onClick, className = '' }) => (
   <button
@@ -19,6 +19,7 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [threads, setThreads] = useState([]);
   const username = localStorage.getItem('username');
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -28,22 +29,18 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
   }, [setIsAuthenticated]);
 
   useEffect(() => {
-    if (searchTerm) {
-      const fetchSearchResults = async () => {
-        try {
-          const results = await search(searchTerm);
-          console.log("search results: ", results);
-          setSearchResults(results);
-          setShowDropdown(true);
-        } catch (error) {
-          console.error("Error fetching search results:", error);
-        }
-      };
-      fetchSearchResults();
-    } else {
-      setShowDropdown(false);
-    }
-  }, [searchTerm]);  
+    const fetchThreads = async () => {
+      try {
+        const response = await fetchAllThreads();
+        const fetchedThreads = response.threads;
+        setThreads(fetchedThreads);
+      } catch (error) {
+        console.log("Trouble fetching all threads!", error);
+      }
+    };
+
+    fetchThreads();
+  }, [])
 
   const handleNavigation = (path) => () => navigate(path);
 
@@ -53,7 +50,20 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
     navigate('/');
   };
 
-  const handleInputChange = (e) => setSearchTerm(e.target.value);
+  const handleInputChange = (e) => {
+    const searchTerm = e.target.value;
+    setSearchTerm(searchTerm);
+    
+    if (searchTerm) {
+      const filteredResults = threads.filter(thread =>
+        thread.title.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setSearchResults(filteredResults);
+      setShowDropdown(true);
+    } else {
+      setShowDropdown(false);
+    }
+  };
 
   const handleResultClick = (result) => {
     navigate(`/thread/${result.id}`);
@@ -74,20 +84,24 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
             type="text"
             value={searchTerm}
             onChange={handleInputChange}
-            placeholder="Search..."
-            className="p-2 border border-gray-300 rounded-lg"
+            placeholder="Search for a thread"
+            className="p-2 border border-gray-300 rounded-lg w-[250px]"
           />
           {showDropdown && (
             <ul className="absolute bg-white border border-gray-300 rounded-lg mt-1 w-full max-h-60 overflow-y-auto shadow-lg z-10">
-              {searchResults.map(result => (
-                <li 
-                  key={result.id} 
-                  className="p-2 cursor-pointer hover:bg-gray-200"
-                  onClick={() => handleResultClick(result)}
-                >
-                  {result.title}
-                </li>
-              ))}
+              {searchResults?.length ? (
+                searchResults.map(result => (
+                  <li 
+                    key={result.id} 
+                    className="p-1 cursor-pointer hover:border-[1px] hover:border-black text-sm rounded-lg"
+                    onClick={() => handleResultClick(result)}
+                  >
+                    {result.title}
+                  </li>
+                ))
+              ) : (
+                <li className="p-2">No results found</li>
+              )}
             </ul>
           )}
         </div>
