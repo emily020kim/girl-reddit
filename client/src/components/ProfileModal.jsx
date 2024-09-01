@@ -106,7 +106,7 @@ const ProfileModal = ({ isOpen, onClose }) => {
             >
               <button
                 className="flex items-center px-4 py-2 text-sm hover:bg-gray-200"
-                onClick={() => handleConfirmDelete(thread.id)} // Show confirmation popup
+                onClick={() => handleConfirmDelete(thread.id)}
               >
                 <FaTrashAlt size={15} className="text-red-600 mr-1" /> Delete
               </button>

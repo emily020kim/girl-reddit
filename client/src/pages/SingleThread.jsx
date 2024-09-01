@@ -25,6 +25,7 @@ const SingleThread = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editingReplyContent, setEditingReplyContent] = useState("");
   const [username, setUsername] = useState("");
+  const [isConfirmVisible, setIsConfirmVisible] = useState(false);
 
   useEffect(() => {
     const fetchThreadAndReplies = async () => {
@@ -110,20 +111,29 @@ const SingleThread = () => {
     }
   };  
 
-  const handleDelete = async (replyId) => {
+  const handleDeleteClick = (replyId) => {
+    setSelectedReplyId(replyId);
+    setIsConfirmVisible(true);
+  };
+
+  const handleConfirmDelete = async () => {
     try {
-      const response = await deleteReply(replyId);
+      const response = await deleteReply(selectedReplyId);
       if (response && response.success) {
-        const updatedReplies = replies.filter(reply => reply.id !== replyId);
+        const updatedReplies = replies.filter(reply => reply.id !== selectedReplyId);
         setReplies(updatedReplies);
         setSelectedReplyId(null);
-        setPopupVisible(false);
+        setIsConfirmVisible(false);
       } else {
         console.error("Failed to delete reply");
       }
     } catch (error) {
       console.error("Error deleting reply:", error);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setIsConfirmVisible(false);
   };
 
   useEffect(() => {
@@ -219,32 +229,53 @@ const SingleThread = () => {
                   </button>
                   <button
                     className="flex items-center px-4 py-2 text-sm hover:bg-gray-200"
-                    onClick={() => handleDelete(reply.id)}
+                    onClick={() => handleDeleteClick(reply.id)}
                   >
                     <FaTrashAlt size={15} className="text-red-600 mr-1" /> Delete
                   </button>
                 </div>
               )}
             </div>
-            {isEditing && selectedReplyId === reply.id ? (
+
+            <h6 className="text-white text-start text-sm mb-2">{reply.content}</h6>
+
+            {isEditing && selectedReplyId === reply.id && (
               <div className="mt-3 w-full">
                 <textarea
-                  className="w-full p-2 rounded-md bg-zinc-600 text-white"
+                  className="w-full p-2 rounded-md bg-white"
                   placeholder="Edit your reply here..."
                   value={editingReplyContent}
                   onChange={(e) => setEditingReplyContent(e.target.value)}
                 />
-                <button onClick={handleEditSubmit} className="bg-cyan rounded-lg py-1 px-2 text-sm font-medium mt-2 text-white">
-                  Update Reply
+                <button onClick={handleEditSubmit} className="rounded-lg py-1 px-2 text-sm font-medium mt-2 text-green bg-white mr-3">
+                  Save
                 </button>
               </div>
-            ) : (
-              <p className="text-white text-sm">{reply?.content}</p>
             )}
           </div>
         ))
       ) : (
-        <p className="text-white">No replies yet.</p>
+        <p className="text-white text-center mt-6">No replies yet</p>
+      )}
+
+      {isConfirmVisible && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
+          <div className="bg-white p-6 rounded-lg">
+            <p className="text-black mb-4">Are you sure you want to delete this reply?</p>
+            <button
+              onClick={handleConfirmDelete}
+              className="bg-red-600 text-white py-2 px-4 rounded-lg mr-2"
+            >
+              Yes, delete it
+            </button>
+            <button
+              onClick={handleCancelDelete}
+              className="bg-gray-300 text-black py-2 px-4 rounded-lg"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
