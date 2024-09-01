@@ -28,20 +28,42 @@ const SingleThread = () => {
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
 
   useEffect(() => {
-    const fetchThreadAndReplies = async () => {
+    const fetchThreadData = async () => {
       try {
         const threadResponse = await fetchSingleThread(id);
-        setThread(threadResponse.thread);
-
+        const threadData = threadResponse.thread;
+        setThread(threadData);
+        
+        const threadUserId = threadData.user_id;
+        const allUsersResponse = await fetchAllUsers();
+        const user = allUsersResponse.users.find((user) => user.id === threadUserId);
+        if (user) {
+          setUsername(user.username);
+        } else {
+          console.error("User not found");
+        }
+    
         const allRepliesResponse = await fetchAllReplies();
-        const filteredReplies = allRepliesResponse.replies.filter((reply) => String(reply.thread_id) === String(id));
-        setReplies(filteredReplies);
+        const filteredReplies = allRepliesResponse.replies.filter(
+          (reply) => String(reply.thread_id) === String(id)
+        );
+  
+        const enrichedReplies = filteredReplies.map((reply) => {
+          const replyUser = allUsersResponse.users.find((user) => user.id === reply.user_id);
+          return {
+            ...reply,
+            username: replyUser ? replyUser.username : "Unknown User",
+          };
+        });
+  
+        setReplies(enrichedReplies);
       } catch (error) {
-        console.error("Failed to fetch thread or replies: ", error);
+        console.error("Failed to fetch thread data:", error);
       }
     };
-    fetchThreadAndReplies();
-  }, [id]);
+  
+    fetchThreadData();
+  }, [id]);  
 
   const handleReplyClick = () => {
     setIsReplying(true);
@@ -86,7 +108,6 @@ const SingleThread = () => {
   
     try {
       const currentDate = new Date().toISOString();
-  
       const replyToEdit = replies.find(reply => reply.id === selectedReplyId);
   
       if (!replyToEdit) {
@@ -136,30 +157,6 @@ const SingleThread = () => {
     setIsConfirmVisible(false);
   };
 
-  useEffect(() => {
-    const fetchThreadAndUsername = async () => {
-      try {
-        const threadResponse = await fetchSingleThread(id);
-        setThread(threadResponse.thread);
-  
-        const threadUserId = threadResponse.thread.user_id;
-  
-        const response = await fetchAllUsers();
-        const user = response.users.find((user) => user.id === threadUserId);
-        if (user) {
-          const name = user.username;
-          setUsername(name);
-        } else {
-          console.error("User not found");
-        }
-      } catch (error) {
-        console.error("Failed to fetch thread or username:", error);
-      }
-    };
-  
-    fetchThreadAndUsername();
-  }, [id]);
-
   return (
     <div className="flex flex-col">
       <div className="flex flex-col bg-green w-full items-start rounded-lg p-3 mt-12 mb-3 shadow-md">
@@ -207,7 +204,7 @@ const SingleThread = () => {
                 <div className="bg-white p-1 rounded-full mr-2">
                   <GiBowTieRibbon size={15} className="text-pink-300" />
                 </div>
-                <p className="text-white text-sm font-medium">username</p>
+                <p className="text-white text-sm font-medium">{reply.username}</p>
               </div>
 
               <BsThreeDots
