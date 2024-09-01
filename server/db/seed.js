@@ -4,10 +4,12 @@ const { createAdmin } = require('./admin');
 const { createUser } = require('./users');
 const { createThread } = require('./threads');
 const { createReply } = require('./replies');
+const { addLike } = require('./likes');
 
 const dropTables = async () => {
   try {
     await db.query(`
+      DROP TABLE IF EXISTS likes;
       DROP TABLE IF EXISTS replies;
       DROP TABLE IF EXISTS threads;
       DROP TABLE IF EXISTS users;
@@ -66,6 +68,22 @@ const createTables = async () => {
         CONSTRAINT fk_thread
           FOREIGN KEY(thread_id)
           REFERENCES threads(id)
+      );
+    `);
+
+    await db.query(`
+      CREATE TABLE likes(
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        thread_id INTEGER NOT NULL,
+        liked BOOLEAN NOT NULL,
+        CONSTRAINT fk_user
+          FOREIGN KEY(user_id)
+          REFERENCES users(id),
+        CONSTRAINT fk_thread
+          FOREIGN KEY(thread_id)
+          REFERENCES threads(id),
+        UNIQUE(user_id, thread_id)
       );
     `);
 
@@ -175,6 +193,32 @@ const createInitialReplies = async () => {
   }
 };
 
+const createInitialLikes = async () => {
+  console.log("Starting to create initial likes...");
+
+  try {
+    const likesToCreate = [
+      {
+        user_id: 1,
+        thread_id: 1,
+        liked: true
+      },
+      {
+        user_id: 2,
+        thread_id: 2,
+        liked: true
+      }
+    ];
+    const likes = await Promise.all(likesToCreate.map(addLike));
+    console.log('Likes created');
+    console.log(likes);
+    console.log('Finished creating likes');
+  } catch (error) {
+    console.error('Error creating likes: ', error);
+    throw error;
+  }
+};
+
 const seedDatabase = async () => {
   try {
     await dropTables();
@@ -183,6 +227,7 @@ const seedDatabase = async () => {
     await createInitialAdmin();
     await createInitialThreads();
     await createInitialReplies();
+    await createInitialLikes();
   } catch (err) {
     console.error('Error seeding database:', err);
     throw err;
