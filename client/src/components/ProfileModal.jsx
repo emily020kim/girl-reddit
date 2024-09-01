@@ -27,9 +27,10 @@ const ProfileModal = ({ isOpen, onClose }) => {
     threads: [],
     showThreads: false,
     popupState: { visible: false, threadId: null },
-  });
+    confirmDelete: { visible: false, threadId: null },
+  });  
 
-  const { threads, showThreads, popupState } = state;
+  const { threads, showThreads, popupState, confirmDelete } = state;
 
   const username = localStorage.getItem('username');
   const userId = parseInt(localStorage.getItem('id'), 10);
@@ -58,8 +59,9 @@ const ProfileModal = ({ isOpen, onClose }) => {
         visible: !(prevState.popupState.visible && prevState.popupState.threadId === threadId),
         threadId: prevState.popupState.threadId === threadId ? null : threadId,
       },
+      confirmDelete: { visible: false, threadId: null },
     }));
-  };
+  };  
 
   const handleDelete = async (threadId) => {
     try {
@@ -69,6 +71,7 @@ const ProfileModal = ({ isOpen, onClose }) => {
           ...prevState,
           threads: prevState.threads.filter(thread => thread.id !== threadId),
           popupState: { visible: false, threadId: null },
+          confirmDelete: { visible: false, threadId: null },
         }));
       } else {
         console.error("Failed to delete thread");
@@ -76,7 +79,14 @@ const ProfileModal = ({ isOpen, onClose }) => {
     } catch (error) {
       console.error("Error deleting thread:", error);
     }
-  };
+  };  
+
+  const handleConfirmDelete = (threadId) => {
+    setState(prevState => ({
+      ...prevState,
+      confirmDelete: { visible: true, threadId },
+    }));
+  };  
 
   const ThreadCard = ({ thread }) => (
     <Card key={thread.id} mb={2} bgColor='#97c1a9' size='sm'>
@@ -96,17 +106,39 @@ const ProfileModal = ({ isOpen, onClose }) => {
             >
               <button
                 className="flex items-center px-4 py-2 text-sm hover:bg-gray-200"
-                onClick={() => handleDelete(thread.id)}
+                onClick={() => handleConfirmDelete(thread.id)} // Show confirmation popup
               >
                 <FaTrashAlt size={15} className="text-red-600 mr-1" /> Delete
               </button>
+            </div>
+          )}
+          {confirmDelete.visible && confirmDelete.threadId === thread.id && (
+            <div className="absolute right-0 bg-white text-black rounded shadow-lg z-10 p-4">
+              <Text mb={2}>Are you sure you want to delete this thread?</Text>
+              <Button
+                colorScheme="red"
+                size="sm"
+                onClick={() => handleDelete(thread.id)}
+                className="mr-2"
+              >
+                Yes, delete
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => setState(prevState => ({
+                  ...prevState,
+                  confirmDelete: { visible: false, threadId: null },
+                }))}
+              >
+                Cancel
+              </Button>
             </div>
           )}
           <Text fontSize='sm' color='white'>{thread.title}</Text>
         </div>
       </CardBody>
     </Card>
-  );
+  );  
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size='lg' isCentered>
