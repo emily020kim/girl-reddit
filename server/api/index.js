@@ -9,7 +9,6 @@ const { JWT_SECRET = 'secretpass123' } = process.env;
 const volleyball = require('volleyball')
 apiRouter.use(volleyball)
 
-// TO BE COMPLETED - set `req.user` if possible, using token sent in the request header
 apiRouter.use(async (req, res, next) => {
   const prefix = 'Bearer ';
   const auth = req.header('Authorization');
@@ -53,6 +52,9 @@ apiRouter.use('/threads', threadsRouter);
 
 const repliesRouter = require('./replies');
 apiRouter.use('/replies', repliesRouter);
+
+const likesRouter = require('./likes');
+apiRouter.use('/likes', likesRouter);
 
 apiRouter.use((err, req, res, next) => {
   res.status(500).send(err)

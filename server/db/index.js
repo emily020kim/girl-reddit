@@ -3,4 +3,5 @@ module.exports = {
   ...require('./admin'),
   ...require('./threads'),
   ...require('./replies'),
+  ...require('./likes'),
 }

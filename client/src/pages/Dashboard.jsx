@@ -1,10 +1,11 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { 
   fetchAllThreads, 
   createThread,
   fetchAllUsers,
+  getLikes,
 } from "../api/ajaxHelpers";
 
 import {
@@ -26,42 +27,57 @@ import {
 import { FaPencil } from "react-icons/fa6";
 import { GiBowTieRibbon } from "react-icons/gi";
 import { HiSparkles } from "react-icons/hi2";
+import { FaHeart } from "react-icons/fa";
 
 const Dashboard = () => {
-  const { id } = useParams();
   const [threads, setThreads] = useState([]);
   const [newThreadTitle, setNewThreadTitle] = useState("");
   const [newThreadContent, setNewThreadContent] = useState("");
   const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
+
+  const initialRef = useRef(null);
+  const finalRef = useRef(null);
+
   const navigate = useNavigate();
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const initialRef = useRef(null)
-  const finalRef = useRef(null)
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
-    const fetchThreadsAndUsers = async () => {
+    const fetchThreadsData = async () => {
       try {
-        const response = await fetchAllThreads();
-        const fetchedThreads = response.threads;
-
-        const userResponse = await fetchAllUsers();
-        const fetchedUsers = userResponse.users;
+        const [threadsResponse, usersResponse] = await Promise.all([
+          fetchAllThreads(),
+          fetchAllUsers()
+        ]);
+        
+        const fetchedThreads = threadsResponse.threads;
+        const fetchedUsers = usersResponse.users;
+  
         setUsers(fetchedUsers);
 
-        const threadsWithUsernames = fetchedThreads.map(thread => {
-          const user = fetchedUsers.find(user => user.id === thread.user_id);
-          return { ...thread, username: user ? user.username : "Unknown" };
-        });
-
-        setThreads(threadsWithUsernames);
+        const threadsWithDetails = await Promise.all(
+          fetchedThreads.map(async (thread) => {
+            const user = fetchedUsers.find(user => user.id === thread.user_id);
+            
+            const likesResponse = await getLikes(thread.id);
+            console.log("likesResponse", likesResponse.likeCount);
+            
+            return {
+              ...thread,
+              username: user ? user.username : "Unknown",
+              likes: likesResponse.likeCount,
+            };
+          })
+        );
+  
+        setThreads(threadsWithDetails);
       } catch (error) {
-        console.error("Failed to fetch threads or users: ", error);
+        console.error("Failed to fetch threads, users, or likes: ", error);
       }
     };
-
-    fetchThreadsAndUsers();
-  }, []);
+  
+    fetchThreadsData();
+  }, []);  
 
   const handleCreateThread = async () => {
     if (newThreadTitle.trim() === "" || newThreadContent.trim() === "") return;
@@ -110,7 +126,13 @@ const Dashboard = () => {
                   {thread.username}
                 </p>
               </div>
-              <h1 className="text-white text-base mb-3">{thread.title}</h1>
+              <h1 className="text-white text-base mb-1">{thread.title}</h1>
+              <div className="flex items-center mb-3">
+                <FaHeart size={15} className="text-white mr-1" />
+                <p className="text-white text-sm font-medium">
+                  {thread.likes}
+                </p>
+              </div>
               <button
                 onClick={() => navigate(`/thread/${thread.id}`)}
                 className="bg-white rounded-lg py-1 px-2 text-sm font-medium border-[1px] border-green text-green"

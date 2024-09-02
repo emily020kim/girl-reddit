@@ -277,3 +277,13 @@ export async function deleteReply(replyId) {
     console.error ('Could not delete reply', error);
   };
 };
+
+export async function getLikes(threadId) {
+  try {
+    const response = await fetch(`${BASE_URL}/likes/${threadId}`);
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error("Trouble fetching likes", error);
+  };
+};

@@ -10,9 +10,7 @@ const {
 likesRouter.get('/:thread_id', async (req, res, next) => {
   try {
     const { thread_id } = req.params;
-
     const likeCount = await getLikesByThread(thread_id);
-
     res.status(200).json({ thread_id, likeCount });
   } catch (error) {
     next(error);
