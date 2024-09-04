@@ -1,6 +1,6 @@
 const express = require('express');
 const likesRouter = express.Router();
-const { requireUser } = require('./utils');
+const { requireUser, requiredNotSent } = require('./utils');
 
 const {
   addLike,
@@ -17,16 +17,22 @@ likesRouter.get('/:thread_id', async (req, res, next) => {
   }
 });
 
-likesRouter.post('/:thread_id', async (req, res, next) => {
+likesRouter.post('/:thread_id', requireUser, requiredNotSent({ requiredParams: ['liked'] }), async (req, res, next) => {
   try {
+    const { liked } = req.body;
     const { thread_id } = req.params;
-    const { user_id, liked } = req.body;
+    const { id } = req.user;
 
-    const like = await addLike({ user_id, thread_id, liked });
+    if (!id || liked === undefined) {
+      return res.status(400).json({ error: 'Missing required fields: user_id or liked' });
+    }
 
+    const like = await addLike({ user_id: id, thread_id, liked });
+    
     res.status(201).json(like);
   } catch (error) {
-    next(error);
+    console.error('Error in POST /likes/:thread_id:', error.message);
+    res.status(500).json({ error: 'An internal server error occurred' });
   }
 });
 

@@ -183,9 +183,7 @@ export async function createThread(user_id, title, content, date) {
 };
 
 export async function createReply(content, threadId) {
-  const sendData = {
-    content,
-  };
+  const sendData = { content };
 
   try {
     const response = await fetch(`${BASE_URL}/replies/${threadId}`, {
@@ -278,6 +276,7 @@ export async function deleteReply(replyId) {
   };
 };
 
+// LIKES ROUTES
 export async function getLikes(threadId) {
   try {
     const response = await fetch(`${BASE_URL}/likes/${threadId}`);
@@ -286,4 +285,25 @@ export async function getLikes(threadId) {
   } catch (error) {
     console.error("Trouble fetching likes", error);
   };
+};
+
+export async function addLikeToThread(userId, threadId, liked) {
+  const sendData = {  userId, threadId, liked };
+
+  try {
+    const response = await fetch(`${BASE_URL}/likes/${threadId}`, {
+      headers: getHeaders(),
+      method: 'POST',
+      body: JSON.stringify(sendData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error("Trouble adding like", error);
+  }
 };

@@ -60,7 +60,6 @@ const Dashboard = () => {
             const user = fetchedUsers.find(user => user.id === thread.user_id);
             
             const likesResponse = await getLikes(thread.id);
-            console.log("likesResponse", likesResponse.likeCount);
             
             return {
               ...thread,

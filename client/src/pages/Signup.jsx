@@ -39,7 +39,7 @@ const Signup = () => {
       } else {
         localStorage.setItem('user-token', response.token);
         setIsRegistered(true);
-        navigate('/');
+        navigate('/dashboard');
       }
     } catch (error) {
       console.error("Signup failed:", error);

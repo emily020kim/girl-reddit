@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+
 import { 
   fetchSingleThread,
   fetchAllReplies, 
@@ -7,15 +8,16 @@ import {
   editReply,
   deleteReply, 
   fetchAllUsers,
+  getLikes,
+  addLikeToThread,
 } from "../api/ajaxHelpers";
+
 import { GiBowTieRibbon } from "react-icons/gi";
-import { FaArrowLeft, FaTrashAlt } from "react-icons/fa";
+import { FaArrowLeft, FaTrashAlt, FaHeart } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import { BsThreeDots } from "react-icons/bs";
 
 const SingleThread = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
   const [thread, setThread] = useState(null);
   const [replies, setReplies] = useState([]);
   const [replyContent, setReplyContent] = useState("");
@@ -26,6 +28,11 @@ const SingleThread = () => {
   const [editingReplyContent, setEditingReplyContent] = useState("");
   const [username, setUsername] = useState("");
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
+  const [liked, setLiked] = useState(false);
+
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const user_id = localStorage.getItem('id');
 
   useEffect(() => {
     const fetchThreadData = async () => {
@@ -42,6 +49,14 @@ const SingleThread = () => {
         } else {
           console.error("User not found");
         }
+
+        const likesResponse = await getLikes(threadData.id);
+        const threadWithLikes = {
+          ...threadData,
+          likes: likesResponse.likeCount,
+        };
+        setThread(threadWithLikes);
+        setLiked(threadData.liked);
     
         const allRepliesResponse = await fetchAllReplies();
         const filteredReplies = allRepliesResponse.replies.filter(
@@ -157,6 +172,25 @@ const SingleThread = () => {
     setIsConfirmVisible(false);
   };
 
+  const handleAddLike = async () => {
+    try {
+      const result = await addLikeToThread(id, user_id, !liked);
+    
+      if (result) {
+        const updatedLikes = await getLikes(id);
+        setThread((prevThread) => ({
+          ...prevThread,
+          likes: updatedLikes.likeCount,
+        }));
+        setLiked(!liked);
+      } else {
+        console.error("Failed to add like");
+      }
+    } catch (error) {
+      console.error("Error in handleAddLike:", error);
+    }
+  }; 
+
   return (
     <div className="flex flex-col">
       <div className="flex flex-col bg-green w-full items-start rounded-lg p-3 mt-12 mb-3 shadow-md">
@@ -173,6 +207,16 @@ const SingleThread = () => {
         </div>
         <h1 className="text-white font-medium text-xl mb-3">{thread?.title}</h1>
         <h6 className="text-white text-start text-sm mb-4">{thread?.content}</h6>
+        <div className="flex items-center mb-3">
+          <FaHeart 
+            size={15} 
+            className={`mr-1 cursor-pointer ${liked ? 'text-red-600' : 'text-white'} hover:scale-[1.25]`} 
+            onClick={handleAddLike} 
+          />
+          <p className="text-white text-sm font-medium">
+            {thread?.likes}
+          </p>
+        </div>
 
         <button onClick={handleReplyClick} className="bg-white rounded-lg py-1 px-2 text-sm font-medium border-[1px] border-cyan text-cyan">
           Reply
