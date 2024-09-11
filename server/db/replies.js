@@ -1,11 +1,12 @@
 const db = require('./client');
 
-const createReply = async({ user_id, thread_id, content, date }) => {
+// Ensure indexes on (id, user_id, thread_id)
+const createReply = async ({ user_id, thread_id, content, date }) => {
   try {
     const { rows: [reply] } = await db.query(`
       INSERT INTO replies(user_id, thread_id, content, date)
       VALUES($1, $2, $3, $4)
-      RETURNING *;  
+      RETURNING id, user_id, thread_id, content, date;
     `, [user_id, thread_id, content, date]);
     return reply;
   } catch (err) {
@@ -16,7 +17,8 @@ const createReply = async({ user_id, thread_id, content, date }) => {
 const getAllReplies = async () => {
   try {
     const { rows } = await db.query(`
-      SELECT * FROM replies;
+      SELECT id, user_id, thread_id, content, date
+      FROM replies;
     `);
     return rows;
   } catch (err) {
@@ -27,27 +29,25 @@ const getAllReplies = async () => {
 const getReplyById = async (id) => {
   try {
     const { rows: [reply] } = await db.query(`
-      SELECT * FROM replies
-      WHERE id=$1;
-    `, [ id ]);
+      SELECT id, user_id, thread_id, content, date
+      FROM replies
+      WHERE id = $1;  -- Ensure id is indexed
+    `, [id]);
 
-    if (!reply) {
-      return;
-    }
-    return reply;
+    return reply || null;
   } catch (err) {
     throw err;
-  };
+  }
 };
 
 const deleteReply = async (id) => {
   try {
-    const {rows: [reply]} = await db.query(`
+    const { rows: [reply] } = await db.query(`
       DELETE FROM replies
-      WHERE id=$1
-      RETURNING *;
+      WHERE id = $1
+      RETURNING id, user_id, thread_id, content, date;
     `, [id]);
-    return reply;
+    return reply || null;
   } catch (err) {
     throw err;
   }
@@ -55,31 +55,27 @@ const deleteReply = async (id) => {
 
 const updateReply = async ({ id, ...fields }) => {
   try {
-    const toUpdate = {};
+    const toUpdate = Object.entries(fields)
+      .filter(([_, value]) => value !== undefined);
 
-    for (let column in fields) {
-      if (fields[column] !== undefined) {
-        toUpdate[column] = fields[column];
-      }
+    if (toUpdate.length === 0) {
+      return await getReplyById(id);
     }
 
-    if (Object.keys(toUpdate).length === 0) {
-      const currentReply = await getReplyById(id);
-      return currentReply;
-    }
-
-    const setString = Object.keys(toUpdate)
-      .map((col, index) => `"${col}" = $${index + 1}`)
+    const setString = toUpdate
+      .map(([col], index) => `"${col}" = $${index + 1}`)
       .join(", ");
 
-    const { rows } = await db.query(`
+    const values = toUpdate.map(([_, value]) => value);
+
+    const { rows: [updatedReply] } = await db.query(`
       UPDATE replies
       SET ${setString}
-      WHERE id = $${Object.keys(toUpdate).length + 1}
-      RETURNING *;
-    `, [...Object.values(toUpdate), id]);
+      WHERE id = $${toUpdate.length + 1}
+      RETURNING id, user_id, thread_id, content, date;
+    `, [...values, id]);
 
-    return rows[0];
+    return updatedReply;
   } catch (error) {
     console.log("Updating reply error", error);
     throw error;
@@ -92,4 +88,4 @@ module.exports = {
   getReplyById,
   deleteReply,
   updateReply,
-}
+};

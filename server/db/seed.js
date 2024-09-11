@@ -87,7 +87,43 @@ const createTables = async () => {
       );
     `);
 
-    console.log('Tables created successfully');
+    await db.query(`
+      CREATE INDEX idx_users_username ON users(username);
+    `);
+
+    await db.query(`
+      CREATE INDEX idx_admin_username ON admin(username);
+    `);
+
+    await db.query(`
+      CREATE INDEX idx_thread_id ON threads(id);
+    `);
+
+    await db.query(`
+      CREATE INDEX idx_user_id ON threads(user_id);
+    `);
+
+    await db.query(`
+      CREATE UNIQUE INDEX idx_replies_id ON replies(id);
+    `);
+
+    await db.query(`
+      CREATE INDEX idx_replies_user_id ON replies(user_id);
+    `);
+
+    await db.query(`
+      CREATE INDEX idx_replies_thread_id ON replies(thread_id);
+    `);
+
+    await db.query(`
+      CREATE INDEX idx_likes_user_thread ON likes(user_id, thread_id);
+    `);
+
+    await db.query(`
+      CREATE INDEX idx_likes_thread_liked ON likes(thread_id, liked);
+    `);
+
+    console.log('Tables and indexes created successfully');
   } catch (err) {
     console.error('Error creating tables:', err);
     throw err;

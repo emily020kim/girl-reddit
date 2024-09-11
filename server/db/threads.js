@@ -1,11 +1,11 @@
 const db = require('./client');
 
-const createThread = async({ user_id, title, content, date }) => {
+const createThread = async ({ user_id, title, content, date }) => {
   try {
     const { rows: [thread] } = await db.query(`
       INSERT INTO threads(user_id, title, content, date)
       VALUES($1, $2, $3, $4)
-      RETURNING *
+      RETURNING id, user_id, title, content, date
     `, [user_id, title, content, date]);
     return thread;
   } catch (err) {
@@ -13,26 +13,25 @@ const createThread = async({ user_id, title, content, date }) => {
   }
 };
 
-const getThreadById = async(id) => {
+const getThreadById = async (id) => {
   try {
     const { rows: [thread] } = await db.query(`
-      SELECT * FROM threads WHERE id = $1
+      SELECT id, user_id, title, content, date FROM threads WHERE id = $1
     `, [id]);
 
-    if (!thread) {
-      return;
-    }
-    return thread;
+    return thread || null;
   } catch (err) {
     throw err;
   }
 };
 
-const getAllThreads = async () => {
+const getAllThreads = async (limit = 10, offset = 0) => {
   try {
     const { rows } = await db.query(`
-      SELECT * FROM threads
-    `);
+      SELECT id, user_id, title, content, date FROM threads
+      ORDER BY date DESC
+      LIMIT $1 OFFSET $2
+    `, [limit, offset]);
     return rows;
   } catch (err) {
     throw err;
@@ -41,8 +40,8 @@ const getAllThreads = async () => {
 
 const deleteThread = async (id) => {
   try {
-    const {rows: [thread]} = await db.query(`
-      DELETE FROM threads WHERE id = $1 RETURNING *
+    const { rows: [thread] } = await db.query(`
+      DELETE FROM threads WHERE id = $1 RETURNING id, user_id, title, content, date
     `, [id]);
     return thread;
   } catch (err) {
@@ -61,29 +60,26 @@ const updateThread = async ({ id, ...fields }) => {
     };
 
     if (Object.keys(toUpdate).length === 0) {
-      const currentThread = await getThreadById(id);
-      return currentThread;
-    };
+      return await getThreadById(id);
+    }
 
     const setString = Object.keys(toUpdate)
       .map((col, index) => `"${col}" = $${index + 1}`)
       .join(", ");
 
-    const { rows } = await db.query(`
+    const { rows: [updatedThread] } = await db.query(`
       UPDATE threads
       SET ${setString}
       WHERE id = $${Object.keys(toUpdate).length + 1}
-      RETURNING *;
+      RETURNING id, user_id, title, content, date;
     `, [...Object.values(toUpdate), id]);
 
-    return rows[0];
+    return updatedThread;
   } catch (error) {
     console.log("Updating thread error", error);
     throw error;
   }
 };
-
-
 
 module.exports = {
   createThread,
@@ -91,4 +87,4 @@ module.exports = {
   getAllThreads,
   deleteThread,
   updateThread,
-}
+};

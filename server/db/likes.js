@@ -18,7 +18,7 @@ const addLike = async ({ user_id, thread_id, liked }) => {
 const getLikesByThread = async (thread_id) => {
   try {
     const { rows: [likeCount] } = await db.query(`
-      SELECT COUNT(*) AS like_count
+      SELECT COUNT(*)::BIGINT AS like_count
       FROM likes
       WHERE thread_id = $1 AND liked = true;
     `, [thread_id]);
